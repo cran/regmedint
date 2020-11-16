@@ -28,7 +28,7 @@
 ##' @param yvar A character vector of length 1. Outcome variable name. It should be the time variable for survival outcomes.
 ##' @param avar A character vector of length 1. Treatment variable name.
 ##' @param mvar A character vector of length 1. Mediator variable name.
-##' @param cvar A character vector of length > 0. Covariate names. Use \code{NULL} if there is no covariate. However, this is a highly suspicious situation. Even if \code{avar} is randomized, \code{mvar} is not. Thus, there should usually be some confounder(s) to account for the common cause structure (confounding) between \code{avar} and \code{yvar}.
+##' @param cvar A character vector of length > 0. Covariate names. Use \code{NULL} if there is no covariate. However, this is a highly suspicious situation. Even if \code{avar} is randomized, \code{mvar} is not. Thus, there should usually be some confounder(s) to account for the common cause structure (confounding) between \code{mvar} and \code{yvar}.
 ##' @param eventvar An character vector of length 1. Only required for survival outcome regression models. Note that the coding is 1 for event and 0 for censoring, following the R survival package convention.
 ##' @param a0 A numeric vector of length 1. Reference level of treatment variable that is considered "untreated" or "unexposed".
 ##' @param a1 A numeric vector of length 1.
@@ -38,6 +38,7 @@
 ##' @param yreg A character vector of length 1. Outcome regression type: \code{"linear"}, \code{"logistic"}, \code{"loglinear"}, \code{"poisson"}, \code{"negbin"}, \code{"survCox"}, \code{"survAFT_exp"}, or \code{"survAFT_weibull"}.
 ##' @param interaction A logical vector of length 1. Default to TRUE. Whether to include a mediator-treatment interaction term in the outcome regression model.
 ##' @param casecontrol A logical vector of length 1. Default to FALSE. Whether data comes from a case-control study.
+##' @param na_omit A logical vector of length 1. Default to FALSE. Whether to use na.omit() function in stats package to remove NAs in columns of interest before fitting the models.
 ##'
 ##' @return regmedint object, which is a list containing the mediator regression object, the outcome regression object, and the regression-based mediation results.
 ##'
@@ -78,9 +79,21 @@ regmedint <- function(data,
                       mreg,
                       yreg,
                       interaction = TRUE,
-                      casecontrol = FALSE) {
+                      casecontrol = FALSE,
+                      na_omit = FALSE) {
+
     ## This is the user-friendly helper function with a name that is the class name.
     ## https://adv-r.hadley.nz/s3.html#helpers
+
+    ## Handle missing value
+    ## Select columns of interest only.
+    data <- data[,c(yvar, avar, mvar, cvar, eventvar)]
+    ## Report NA
+    report_missing(data, yvar, avar, mvar, cvar, eventvar)
+    ## Construct a complete case dataset if requested via na_omit
+    if(any(is.na(data)) && na_omit) {
+        data <- na.omit(data)
+    }
 
     ## Check data contains yvar, avar, mvar, cvar, eventvar (if provided)
     validate_args(data = data,
@@ -126,6 +139,42 @@ regmedint <- function(data,
 }
 
 
+
+
+###
+#### Functions to handle missing data
+################################################################################
+
+##' Report variables with missing data
+##'
+##' Report the number of missing observations for each variables of interest relevant for the analysis
+##'
+##' @inheritParams regmedint
+##'
+##' @return No return value, called for side effects.
+report_missing <- function(data, yvar, avar, mvar, cvar, eventvar){
+    ## Only report missing in these variables.
+    data <- data[c(yvar, avar, mvar, cvar, eventvar)]
+    ## Add warning: NAs
+    ## If the dataset contains NAs, print a general warning message
+    if (any(is.na(data))) {
+        message("Dataset contains NAs.")
+    }
+    ## Print the number of NAs by columns of interest
+    for (i in 1:ncol(data)) {
+        if (any(is.na(data[,i]))) {
+            message(paste(colnames(data)[i],
+                          "has",
+                          sum(is.na(data[,i])),
+                          "NAs."))
+        }
+    }
+}
+
+
+
+
+
 ###
 ### Argument validation function
 ################################################################################
@@ -169,15 +218,19 @@ validate_args <- function(data,
     ##
     assertthat::assert_that(is.numeric(a0))
     assertthat::assert_that(length(a0) == 1)
+    assertthat::assert_that(!is.na(a0))
     ##
     assertthat::assert_that(is.numeric(a1))
     assertthat::assert_that(length(a1) == 1)
+    assertthat::assert_that(!is.na(a1))
     ##
     assertthat::assert_that(is.numeric(m_cde))
     assertthat::assert_that(length(m_cde) == 1)
+    assertthat::assert_that(!is.na(m_cde))
     ##
     assertthat::assert_that(is.null(c_cond) | is.numeric(c_cond))
     assertthat::assert_that(length(c_cond) == length(cvar))
+    assertthat::assert_that(all(!is.na(c_cond)))
     ##
     assertthat::assert_that(is.character(mreg))
     assertthat::assert_that(length(mreg) == 1)
@@ -203,8 +256,17 @@ validate_args <- function(data,
     ## between yreg and mreg.
     vars_interest <- c(yvar, avar, mvar, cvar, eventvar)
     data_vars_interest <- data[, vars_interest, drop = FALSE]
+    logical_vars_missing <- unlist(lapply(data_vars_interest, function(v) {
+        any(is.na(v))
+    }))
+    ## Capture names of variables with missingness
+    vars_missing <- vars_interest[logical_vars_missing]
     assertthat::assert_that(all(stats::complete.cases(data_vars_interest)),
-                            msg = "Missing is not allowed in variables of intrest! Consider multiple imputation.")
+                            msg = paste0("Missingness is not allowed in variables of interest!
+For multiple imputation, see the multiple imputation vignette: vignette(\"vig_04_mi\")
+To perform complete case analysis, use na_omit = TRUE.
+Variables with missingness: ",
+paste0(vars_missing, collapse = ", ")))
 
     ## Do not allow factors as they can result in multiple
     ## dummy variables and coef results in different names

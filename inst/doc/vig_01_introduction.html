@@ -12,7 +12,7 @@
 
 <meta name="author" content="Kazuki Yoshida" />
 
-<meta name="date" content="2020-05-07" />
+<meta name="date" content="2020-11-16" />
 
 <title>Introduction to user interface functions</title>
 
@@ -29,6 +29,54 @@ document.addEventListener('DOMContentLoaded', function(e) {
   }
 });
 </script>
+<style type="text/css">
+a.anchor-section {margin-left: 10px; visibility: hidden; color: inherit;}
+a.anchor-section::before {content: '#';}
+.hasAnchor:hover a.anchor-section {visibility: visible;}
+</style>
+<script>// Anchor sections v1.0 written by Atsushi Yasumoto on Oct 3rd, 2020.
+document.addEventListener('DOMContentLoaded', function() {
+  // Do nothing if AnchorJS is used
+  if (typeof window.anchors === 'object' && anchors.hasOwnProperty('hasAnchorJSLink')) {
+    return;
+  }
+
+  const h = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+  // Do nothing if sections are already anchored
+  if (Array.from(h).some(x => x.classList.contains('hasAnchor'))) {
+    return null;
+  }
+
+  // Use section id when pandoc runs with --section-divs
+  const section_id = function(x) {
+    return ((x.classList.contains('section') || (x.tagName === 'SECTION'))
+            ? x.id : '');
+  };
+
+  // Add anchors
+  h.forEach(function(x) {
+    const id = x.id || section_id(x.parentElement);
+    if (id === '') {
+      return null;
+    }
+    let anchor = document.createElement('a');
+    anchor.href = '#' + id;
+    anchor.classList = ['anchor-section'];
+    x.classList.add('hasAnchor');
+    x.appendChild(anchor);
+  });
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 
 <style type="text/css">code{white-space: pre;}</style>
@@ -315,45 +363,45 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Introduction to user interface functions</h1>
 <h4 class="author">Kazuki Yoshida</h4>
-<h4 class="date">2020-05-07</h4>
+<h4 class="date">2020-11-16</h4>
 
 
 
 <div id="data-preparation" class="section level1">
 <h1>Data preparation</h1>
 <p>The package require all variables to be numerical. So a multi-category factor needs to be converted to multiple dichotomous indicators. For survival outcome models, the indicator variable is for event (1 = event, 0 = censored).</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(regmedint)</span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(tidyverse)</span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="co">## Prepare dataset</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="kw">data</span>(vv2015)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(regmedint)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="do">## Prepare dataset</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(vv2015)</span></code></pre></div>
 </div>
 <div id="regmedint-object" class="section level1">
 <h1><code>regmedint</code> object</h1>
 <p>Following typical modeling workflow in R (e.g., <code>lm</code> and <code>glm</code>), a constructor function is used to create a model fit object. The <code>summary</code> method is the main user function for examining the results in the object. Lower-level methods such as <code>coef</code>, <code>vcov</code>, and <code>confint</code> are also provided for flexibility. The <code>print</code> method is mainly for meaningful implicit printing when only the object name is evaluated. All methods for the <code>regmedint</code> object has arguments <code>a0</code>, <code>a1</code>, <code>m_cde</code>, and <code>c_cond</code>. These are used to re-evaluate the results without re-fitting the underlying models.</p>
 <div id="regemedint-object-constructor" class="section level2">
 <h2><code>regemedint()</code> object constructor</h2>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>regmedint_obj &lt;-<span class="st"> </span><span class="kw">regmedint</span>(<span class="dt">data =</span> vv2015,</span>
-<span id="cb2-2"><a href="#cb2-2"></a>                           <span class="co">## Variables</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a>                           <span class="dt">yvar =</span> <span class="st">&quot;y&quot;</span>,</span>
-<span id="cb2-4"><a href="#cb2-4"></a>                           <span class="dt">avar =</span> <span class="st">&quot;x&quot;</span>,</span>
-<span id="cb2-5"><a href="#cb2-5"></a>                           <span class="dt">mvar =</span> <span class="st">&quot;m&quot;</span>,</span>
-<span id="cb2-6"><a href="#cb2-6"></a>                           <span class="dt">cvar =</span> <span class="kw">c</span>(<span class="st">&quot;c&quot;</span>),</span>
-<span id="cb2-7"><a href="#cb2-7"></a>                           <span class="dt">eventvar =</span> <span class="st">&quot;event&quot;</span>,</span>
-<span id="cb2-8"><a href="#cb2-8"></a>                           <span class="co">## Values at which effects are evaluated</span></span>
-<span id="cb2-9"><a href="#cb2-9"></a>                           <span class="dt">a0 =</span> <span class="dv">0</span>,</span>
-<span id="cb2-10"><a href="#cb2-10"></a>                           <span class="dt">a1 =</span> <span class="dv">1</span>,</span>
-<span id="cb2-11"><a href="#cb2-11"></a>                           <span class="dt">m_cde =</span> <span class="dv">1</span>,</span>
-<span id="cb2-12"><a href="#cb2-12"></a>                           <span class="dt">c_cond =</span> <span class="fl">0.5</span>,</span>
-<span id="cb2-13"><a href="#cb2-13"></a>                           <span class="co">## Model types</span></span>
-<span id="cb2-14"><a href="#cb2-14"></a>                           <span class="dt">mreg =</span> <span class="st">&quot;logistic&quot;</span>,</span>
-<span id="cb2-15"><a href="#cb2-15"></a>                           <span class="dt">yreg =</span> <span class="st">&quot;survAFT_weibull&quot;</span>,</span>
-<span id="cb2-16"><a href="#cb2-16"></a>                           <span class="co">## Additional specification</span></span>
-<span id="cb2-17"><a href="#cb2-17"></a>                           <span class="dt">interaction =</span> <span class="ot">TRUE</span>,</span>
-<span id="cb2-18"><a href="#cb2-18"></a>                           <span class="dt">casecontrol =</span> <span class="ot">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>regmedint_obj <span class="ot">&lt;-</span> <span class="fu">regmedint</span>(<span class="at">data =</span> vv2015,</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                           <span class="do">## Variables</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                           <span class="at">yvar =</span> <span class="st">&quot;y&quot;</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                           <span class="at">avar =</span> <span class="st">&quot;x&quot;</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>                           <span class="at">mvar =</span> <span class="st">&quot;m&quot;</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                           <span class="at">cvar =</span> <span class="fu">c</span>(<span class="st">&quot;c&quot;</span>),</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                           <span class="at">eventvar =</span> <span class="st">&quot;event&quot;</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                           <span class="do">## Values at which effects are evaluated</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>                           <span class="at">a0 =</span> <span class="dv">0</span>,</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>                           <span class="at">a1 =</span> <span class="dv">1</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>                           <span class="at">m_cde =</span> <span class="dv">1</span>,</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>                           <span class="at">c_cond =</span> <span class="fl">0.5</span>,</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>                           <span class="do">## Model types</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>                           <span class="at">mreg =</span> <span class="st">&quot;logistic&quot;</span>,</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>                           <span class="at">yreg =</span> <span class="st">&quot;survAFT_weibull&quot;</span>,</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>                           <span class="do">## Additional specification</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>                           <span class="at">interaction =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>                           <span class="at">casecontrol =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
 </div>
 <div id="summary-for-regmedint" class="section level2">
 <h2><code>summary()</code> for <code>regmedint</code></h2>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">summary</span>(regmedint_obj)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(regmedint_obj)</span></code></pre></div>
 <pre><code>## ### Mediator model
 ## 
 ## Call:
@@ -418,7 +466,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ##  c_cond (covariate vector value) = 0.5
 ## 
 ## Note that effect estimates can vary over m_cde and c_cond values when interaction = TRUE.</code></pre>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">summary</span>(regmedint_obj, <span class="dt">exponentiate =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(regmedint_obj, <span class="at">exponentiate =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <pre><code>## ### Mediator model
 ## 
 ## Call:
@@ -491,7 +539,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ##  c_cond (covariate vector value) = 0.5
 ## 
 ## Note that effect estimates can vary over m_cde and c_cond values when interaction = TRUE.</code></pre>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">summary</span>(regmedint_obj, <span class="dt">m_cde =</span> <span class="dv">0</span>, <span class="dt">c_cond =</span> <span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(regmedint_obj, <span class="at">m_cde =</span> <span class="dv">0</span>, <span class="at">c_cond =</span> <span class="dv">1</span>)</span></code></pre></div>
 <pre><code>## ### Mediator model
 ## 
 ## Call:
@@ -556,7 +604,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ##  c_cond (covariate vector value) = 1
 ## 
 ## Note that effect estimates can vary over m_cde and c_cond values when interaction = TRUE.</code></pre>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">summary</span>(regmedint_obj, <span class="dt">m_cde =</span> <span class="dv">0</span>, <span class="dt">c_cond =</span> <span class="dv">1</span>, <span class="dt">level =</span> <span class="fl">0.99</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(regmedint_obj, <span class="at">m_cde =</span> <span class="dv">0</span>, <span class="at">c_cond =</span> <span class="dv">1</span>, <span class="at">level =</span> <span class="fl">0.99</span>)</span></code></pre></div>
 <pre><code>## ### Mediator model
 ## 
 ## Call:
@@ -624,7 +672,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 <div id="coef-for-regmedint" class="section level2">
 <h2><code>coef()</code> for <code>regmedint</code></h2>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="kw">coef</span>(regmedint_obj)</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(regmedint_obj)</span></code></pre></div>
 <pre><code>##         cde        pnde        tnie        tnde        pnie          te 
 ## 0.541070807 0.488930417 0.018240025 0.498503455 0.008666987 0.507170442 
 ##          pm 
@@ -641,7 +689,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## 
 ## attr(,&quot;args&quot;)$c_cond
 ## [1] 0.5</code></pre>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw">coef</span>(regmedint_obj, <span class="dt">m_cde =</span> <span class="dv">0</span>, <span class="dt">c_cond =</span> <span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(regmedint_obj, <span class="at">m_cde =</span> <span class="dv">0</span>, <span class="at">c_cond =</span> <span class="dv">1</span>)</span></code></pre></div>
 <pre><code>##         cde        pnde        tnie        tnde        pnie          te 
 ## 0.440756562 0.492306223 0.018077074 0.501765186 0.008618111 0.510383297 
 ##          pm 
@@ -661,7 +709,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 <div id="vcov-for-regmedint" class="section level2">
 <h2><code>vcov()</code> for <code>regmedint</code></h2>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="kw">vcov</span>(regmedint_obj)</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vcov</span>(regmedint_obj)</span></code></pre></div>
 <pre><code>##             cde       pnde        tnie       tnde         pnie         te
 ## cde  0.08657105         NA          NA         NA           NA         NA
 ## pnde         NA 0.04430708          NA         NA           NA         NA
@@ -690,7 +738,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## 
 ## attr(,&quot;args&quot;)$c_cond
 ## [1] 0.5</code></pre>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="kw">vcov</span>(regmedint_obj, <span class="dt">m_cde =</span> <span class="dv">0</span>, <span class="dt">c_cond =</span> <span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vcov</span>(regmedint_obj, <span class="at">m_cde =</span> <span class="dv">0</span>, <span class="at">c_cond =</span> <span class="dv">1</span>)</span></code></pre></div>
 <pre><code>##             cde       pnde        tnie       tnde         pnie         te
 ## cde  0.09049915         NA          NA         NA           NA         NA
 ## pnde         NA 0.04416578          NA         NA           NA         NA
@@ -722,7 +770,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 <div id="confint-for-regmedint" class="section level2">
 <h2><code>confint()</code> for <code>regmedint</code></h2>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="kw">confint</span>(regmedint_obj)</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confint</span>(regmedint_obj)</span></code></pre></div>
 <pre><code>##            lower      upper
 ## cde  -0.03560858 1.11775019
 ## pnde  0.07637274 0.90148809
@@ -743,7 +791,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## 
 ## attr(,&quot;args&quot;)$c_cond
 ## [1] 0.5</code></pre>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="kw">confint</span>(regmedint_obj, <span class="dt">m_cde =</span> <span class="dv">0</span>, <span class="dt">c_cond =</span> <span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confint</span>(regmedint_obj, <span class="at">m_cde =</span> <span class="dv">0</span>, <span class="at">c_cond =</span> <span class="dv">1</span>)</span></code></pre></div>
 <pre><code>##            lower      upper
 ## cde  -0.14886090 1.03037403
 ## pnde  0.08040695 0.90420550
@@ -764,7 +812,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## 
 ## attr(,&quot;args&quot;)$c_cond
 ## [1] 1</code></pre>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a><span class="kw">confint</span>(regmedint_obj, <span class="dt">m_cde =</span> <span class="dv">0</span>, <span class="dt">c_cond =</span> <span class="dv">1</span>, <span class="dt">level =</span> <span class="fl">0.99</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confint</span>(regmedint_obj, <span class="at">m_cde =</span> <span class="dv">0</span>, <span class="at">c_cond =</span> <span class="dv">1</span>, <span class="at">level =</span> <span class="fl">0.99</span>)</span></code></pre></div>
 <pre><code>##             lower      upper
 ## cde  -0.334132138 1.21564526
 ## pnde -0.049021181 1.03363363
@@ -788,7 +836,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 <div id="print-for-regmedint" class="section level2">
 <h2><code>print()</code> for <code>regmedint</code></h2>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a>regmedint_obj <span class="co"># Implicit printing</span></span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>regmedint_obj <span class="co"># Implicit printing</span></span></code></pre></div>
 <pre><code>## ### Mediator model
 ## 
 ## Call:  glm(formula = m ~ x + c, family = binomial(link = &quot;logit&quot;), data = data)
@@ -819,7 +867,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## 0.541070807 0.488930417 0.018240025 0.498503455 0.008666987 0.507170442 
 ##          pm 
 ## 0.045436278</code></pre>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a><span class="kw">print</span>(regmedint_obj)</span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(regmedint_obj)</span></code></pre></div>
 <pre><code>## ### Mediator model
 ## 
 ## Call:  glm(formula = m ~ x + c, family = binomial(link = &quot;logit&quot;), data = data)
@@ -850,7 +898,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## 0.541070807 0.488930417 0.018240025 0.498503455 0.008666987 0.507170442 
 ##          pm 
 ## 0.045436278</code></pre>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a><span class="kw">print</span>(regmedint_obj, <span class="dt">m_cde =</span> <span class="dv">0</span>, <span class="dt">c_cond =</span> <span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(regmedint_obj, <span class="at">m_cde =</span> <span class="dv">0</span>, <span class="at">c_cond =</span> <span class="dv">1</span>)</span></code></pre></div>
 <pre><code>## ### Mediator model
 ## 
 ## Call:  glm(formula = m ~ x + c, family = binomial(link = &quot;logit&quot;), data = data)
@@ -887,7 +935,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p>The <code>summary</code> method for the <code>regmedint</code> object returns an object of class <code>summary_regmedint</code>. To extract the mediation analysis result table as a matrix, use the <code>coef</code> method.</p>
 <div id="coef-for-summary_regmedint" class="section level3">
 <h3><code>coef()</code> for <code>summary_regmedint</code></h3>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="kw">coef</span>(<span class="kw">summary</span>(regmedint_obj))</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(<span class="fu">summary</span>(regmedint_obj))</span></code></pre></div>
 <pre><code>##              est         se         Z           p       lower      upper
 ## cde  0.541070807 0.29422958 1.8389409 0.065923882 -0.03560858 1.11775019
 ## pnde 0.488930417 0.21049248 2.3227928 0.020190284  0.07637274 0.90148809
@@ -899,8 +947,8 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 <div id="print-for-summary_regmedint" class="section level3">
 <h3><code>print()</code> for <code>summary_regmedint</code></h3>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>regmedint_summary_obj &lt;-<span class="st"> </span><span class="kw">summary</span>(regmedint_obj)</span>
-<span id="cb33-2"><a href="#cb33-2"></a>regmedint_summary_obj <span class="co"># Implicit printing</span></span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>regmedint_summary_obj <span class="ot">&lt;-</span> <span class="fu">summary</span>(regmedint_obj)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>regmedint_summary_obj <span class="co"># Implicit printing</span></span></code></pre></div>
 <pre><code>## ### Mediator model
 ## 
 ## Call:
@@ -965,7 +1013,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ##  c_cond (covariate vector value) = 0.5
 ## 
 ## Note that effect estimates can vary over m_cde and c_cond values when interaction = TRUE.</code></pre>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a><span class="kw">print</span>(regmedint_summary_obj)</span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(regmedint_summary_obj)</span></code></pre></div>
 <pre><code>## ### Mediator model
 ## 
 ## Call:

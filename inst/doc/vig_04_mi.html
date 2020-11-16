@@ -12,7 +12,7 @@
 
 <meta name="author" content="Kazuki Yoshida" />
 
-<meta name="date" content="2020-05-07" />
+<meta name="date" content="2020-11-16" />
 
 <title>Using multiple imputation with regmedint</title>
 
@@ -29,6 +29,54 @@ document.addEventListener('DOMContentLoaded', function(e) {
   }
 });
 </script>
+<style type="text/css">
+a.anchor-section {margin-left: 10px; visibility: hidden; color: inherit;}
+a.anchor-section::before {content: '#';}
+.hasAnchor:hover a.anchor-section {visibility: visible;}
+</style>
+<script>// Anchor sections v1.0 written by Atsushi Yasumoto on Oct 3rd, 2020.
+document.addEventListener('DOMContentLoaded', function() {
+  // Do nothing if AnchorJS is used
+  if (typeof window.anchors === 'object' && anchors.hasOwnProperty('hasAnchorJSLink')) {
+    return;
+  }
+
+  const h = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+  // Do nothing if sections are already anchored
+  if (Array.from(h).some(x => x.classList.contains('hasAnchor'))) {
+    return null;
+  }
+
+  // Use section id when pandoc runs with --section-divs
+  const section_id = function(x) {
+    return ((x.classList.contains('section') || (x.tagName === 'SECTION'))
+            ? x.id : '');
+  };
+
+  // Add anchors
+  h.forEach(function(x) {
+    const id = x.id || section_id(x.parentElement);
+    if (id === '') {
+      return null;
+    }
+    let anchor = document.createElement('a');
+    anchor.href = '#' + id;
+    anchor.classList = ['anchor-section'];
+    x.classList.add('hasAnchor');
+    x.appendChild(anchor);
+  });
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 
 <style type="text/css">code{white-space: pre;}</style>
@@ -315,7 +363,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Using multiple imputation with regmedint</h1>
 <h4 class="author">Kazuki Yoshida</h4>
-<h4 class="date">2020-05-07</h4>
+<h4 class="date">2020-11-16</h4>
 
 
 
@@ -323,44 +371,44 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="missing-data-generation" class="section level2">
 <h2>Missing data generation</h2>
 <p>For demonstration purpose, missing data is introduced here.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">set.seed</span>(<span class="dv">138087069</span>)</span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(regmedint)</span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">library</span>(tidyverse)</span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="co">## Prepare dataset</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="kw">data</span>(vv2015)</span>
-<span id="cb1-6"><a href="#cb1-6"></a>vv2015 &lt;-<span class="st"> </span>vv2015 <span class="op">%&gt;%</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a><span class="st">    </span><span class="kw">select</span>(<span class="op">-</span>cens) <span class="op">%&gt;%</span></span>
-<span id="cb1-8"><a href="#cb1-8"></a><span class="st">    </span><span class="co">## Generate exposure-dependent missing of mediator</span></span>
-<span id="cb1-9"><a href="#cb1-9"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">logit_p_m_miss =</span> <span class="dv">-1</span> <span class="op">+</span><span class="st"> </span><span class="fl">0.5</span> <span class="op">*</span><span class="st"> </span>x,</span>
-<span id="cb1-10"><a href="#cb1-10"></a>           <span class="dt">p_m_miss =</span> <span class="kw">exp</span>(logit_p_m_miss) <span class="op">/</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="kw">exp</span>(logit_p_m_miss)),</span>
-<span id="cb1-11"><a href="#cb1-11"></a>           <span class="co">## Indicator draw</span></span>
-<span id="cb1-12"><a href="#cb1-12"></a>           <span class="dt">ind_m_miss =</span> <span class="kw">rbinom</span>(<span class="dt">n =</span> <span class="kw">length</span>(p_m_miss), <span class="dt">size =</span> <span class="dv">1</span>, <span class="dt">prob =</span> p_m_miss),</span>
-<span id="cb1-13"><a href="#cb1-13"></a>           <span class="dt">m_true =</span> m,</span>
-<span id="cb1-14"><a href="#cb1-14"></a>           <span class="dt">m =</span> <span class="kw">if_else</span>(ind_m_miss <span class="op">==</span><span class="st"> </span>1L, <span class="kw">as.numeric</span>(<span class="ot">NA</span>), m))</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">138087069</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(regmedint)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="do">## Prepare dataset</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(vv2015)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>vv2015 <span class="ot">&lt;-</span> vv2015 <span class="sc">%&gt;%</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(<span class="sc">-</span>cens) <span class="sc">%&gt;%</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="do">## Generate exposure-dependent missing of mediator</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">logit_p_m_miss =</span> <span class="sc">-</span><span class="dv">1</span> <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> x,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>           <span class="at">p_m_miss =</span> <span class="fu">exp</span>(logit_p_m_miss) <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">+</span> <span class="fu">exp</span>(logit_p_m_miss)),</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>           <span class="do">## Indicator draw</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>           <span class="at">ind_m_miss =</span> <span class="fu">rbinom</span>(<span class="at">n =</span> <span class="fu">length</span>(p_m_miss), <span class="at">size =</span> <span class="dv">1</span>, <span class="at">prob =</span> p_m_miss),</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>           <span class="at">m_true =</span> m,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>           <span class="at">m =</span> <span class="fu">if_else</span>(ind_m_miss <span class="sc">==</span> 1L, <span class="fu">as.numeric</span>(<span class="cn">NA</span>), m))</span></code></pre></div>
 </div>
 <div id="truth-fit" class="section level2">
 <h2>Truth fit</h2>
 <p>Taking the advantage of the simulated setting, the true model is fit here.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>regmedint_true &lt;-</span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="st">    </span><span class="kw">regmedint</span>(<span class="dt">data =</span> vv2015,</span>
-<span id="cb2-3"><a href="#cb2-3"></a>              <span class="co">## Variables</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a>              <span class="dt">yvar =</span> <span class="st">&quot;y&quot;</span>,</span>
-<span id="cb2-5"><a href="#cb2-5"></a>              <span class="dt">avar =</span> <span class="st">&quot;x&quot;</span>,</span>
-<span id="cb2-6"><a href="#cb2-6"></a>              <span class="dt">mvar =</span> <span class="st">&quot;m_true&quot;</span>,</span>
-<span id="cb2-7"><a href="#cb2-7"></a>              <span class="dt">cvar =</span> <span class="kw">c</span>(<span class="st">&quot;c&quot;</span>),</span>
-<span id="cb2-8"><a href="#cb2-8"></a>              <span class="dt">eventvar =</span> <span class="st">&quot;event&quot;</span>,</span>
-<span id="cb2-9"><a href="#cb2-9"></a>              <span class="co">## Values at which effects are evaluated</span></span>
-<span id="cb2-10"><a href="#cb2-10"></a>              <span class="dt">a0 =</span> <span class="dv">0</span>,</span>
-<span id="cb2-11"><a href="#cb2-11"></a>              <span class="dt">a1 =</span> <span class="dv">1</span>,</span>
-<span id="cb2-12"><a href="#cb2-12"></a>              <span class="dt">m_cde =</span> <span class="dv">1</span>,</span>
-<span id="cb2-13"><a href="#cb2-13"></a>              <span class="dt">c_cond =</span> <span class="fl">0.5</span>,</span>
-<span id="cb2-14"><a href="#cb2-14"></a>              <span class="co">## Model types</span></span>
-<span id="cb2-15"><a href="#cb2-15"></a>              <span class="dt">mreg =</span> <span class="st">&quot;logistic&quot;</span>,</span>
-<span id="cb2-16"><a href="#cb2-16"></a>              <span class="dt">yreg =</span> <span class="st">&quot;survAFT_weibull&quot;</span>,</span>
-<span id="cb2-17"><a href="#cb2-17"></a>              <span class="co">## Additional specification</span></span>
-<span id="cb2-18"><a href="#cb2-18"></a>              <span class="dt">interaction =</span> <span class="ot">TRUE</span>,</span>
-<span id="cb2-19"><a href="#cb2-19"></a>              <span class="dt">casecontrol =</span> <span class="ot">FALSE</span>)</span>
-<span id="cb2-20"><a href="#cb2-20"></a><span class="kw">summary</span>(regmedint_true)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>regmedint_true <span class="ot">&lt;-</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">regmedint</span>(<span class="at">data =</span> vv2015,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>              <span class="do">## Variables</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>              <span class="at">yvar =</span> <span class="st">&quot;y&quot;</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">avar =</span> <span class="st">&quot;x&quot;</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">mvar =</span> <span class="st">&quot;m_true&quot;</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">cvar =</span> <span class="fu">c</span>(<span class="st">&quot;c&quot;</span>),</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>              <span class="at">eventvar =</span> <span class="st">&quot;event&quot;</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>              <span class="do">## Values at which effects are evaluated</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>              <span class="at">a0 =</span> <span class="dv">0</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>              <span class="at">a1 =</span> <span class="dv">1</span>,</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>              <span class="at">m_cde =</span> <span class="dv">1</span>,</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>              <span class="at">c_cond =</span> <span class="fl">0.5</span>,</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>              <span class="do">## Model types</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>              <span class="at">mreg =</span> <span class="st">&quot;logistic&quot;</span>,</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>              <span class="at">yreg =</span> <span class="st">&quot;survAFT_weibull&quot;</span>,</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>              <span class="do">## Additional specification</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>              <span class="at">interaction =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>              <span class="at">casecontrol =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(regmedint_true)</span></code></pre></div>
 <pre><code>## ### Mediator model
 ## 
 ## Call:
@@ -429,27 +477,27 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </div>
 <div id="naive-complete-case-analysis" class="section level2">
 <h2>Naive complete case analysis</h2>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>regmedint_cca &lt;-<span class="st"> </span>vv2015 <span class="op">%&gt;%</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="st">    </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(m)) <span class="op">%&gt;%</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a><span class="st">    </span><span class="kw">regmedint</span>(<span class="dt">data =</span> .,</span>
-<span id="cb4-4"><a href="#cb4-4"></a>              <span class="co">## Variables</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a>              <span class="dt">yvar =</span> <span class="st">&quot;y&quot;</span>,</span>
-<span id="cb4-6"><a href="#cb4-6"></a>              <span class="dt">avar =</span> <span class="st">&quot;x&quot;</span>,</span>
-<span id="cb4-7"><a href="#cb4-7"></a>              <span class="dt">mvar =</span> <span class="st">&quot;m&quot;</span>,</span>
-<span id="cb4-8"><a href="#cb4-8"></a>              <span class="dt">cvar =</span> <span class="kw">c</span>(<span class="st">&quot;c&quot;</span>),</span>
-<span id="cb4-9"><a href="#cb4-9"></a>              <span class="dt">eventvar =</span> <span class="st">&quot;event&quot;</span>,</span>
-<span id="cb4-10"><a href="#cb4-10"></a>              <span class="co">## Values at which effects are evaluated</span></span>
-<span id="cb4-11"><a href="#cb4-11"></a>              <span class="dt">a0 =</span> <span class="dv">0</span>,</span>
-<span id="cb4-12"><a href="#cb4-12"></a>              <span class="dt">a1 =</span> <span class="dv">1</span>,</span>
-<span id="cb4-13"><a href="#cb4-13"></a>              <span class="dt">m_cde =</span> <span class="dv">1</span>,</span>
-<span id="cb4-14"><a href="#cb4-14"></a>              <span class="dt">c_cond =</span> <span class="fl">0.5</span>,</span>
-<span id="cb4-15"><a href="#cb4-15"></a>              <span class="co">## Model types</span></span>
-<span id="cb4-16"><a href="#cb4-16"></a>              <span class="dt">mreg =</span> <span class="st">&quot;logistic&quot;</span>,</span>
-<span id="cb4-17"><a href="#cb4-17"></a>              <span class="dt">yreg =</span> <span class="st">&quot;survAFT_weibull&quot;</span>,</span>
-<span id="cb4-18"><a href="#cb4-18"></a>              <span class="co">## Additional specification</span></span>
-<span id="cb4-19"><a href="#cb4-19"></a>              <span class="dt">interaction =</span> <span class="ot">TRUE</span>,</span>
-<span id="cb4-20"><a href="#cb4-20"></a>              <span class="dt">casecontrol =</span> <span class="ot">FALSE</span>)</span>
-<span id="cb4-21"><a href="#cb4-21"></a><span class="kw">summary</span>(regmedint_cca)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>regmedint_cca <span class="ot">&lt;-</span> vv2015 <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(m)) <span class="sc">%&gt;%</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">regmedint</span>(<span class="at">data =</span> .,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>              <span class="do">## Variables</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">yvar =</span> <span class="st">&quot;y&quot;</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">avar =</span> <span class="st">&quot;x&quot;</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">mvar =</span> <span class="st">&quot;m&quot;</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>              <span class="at">cvar =</span> <span class="fu">c</span>(<span class="st">&quot;c&quot;</span>),</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>              <span class="at">eventvar =</span> <span class="st">&quot;event&quot;</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>              <span class="do">## Values at which effects are evaluated</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>              <span class="at">a0 =</span> <span class="dv">0</span>,</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>              <span class="at">a1 =</span> <span class="dv">1</span>,</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>              <span class="at">m_cde =</span> <span class="dv">1</span>,</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>              <span class="at">c_cond =</span> <span class="fl">0.5</span>,</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>              <span class="do">## Model types</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>              <span class="at">mreg =</span> <span class="st">&quot;logistic&quot;</span>,</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>              <span class="at">yreg =</span> <span class="st">&quot;survAFT_weibull&quot;</span>,</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>              <span class="do">## Additional specification</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>              <span class="at">interaction =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>              <span class="at">casecontrol =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(regmedint_cca)</span></code></pre></div>
 <pre><code>## ### Mediator model
 ## 
 ## Call:
@@ -518,14 +566,14 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="multiple-imputation" class="section level2">
 <h2>Multiple imputation</h2>
 <p>This specific data setting is a little tricky in that the outcome variable is a censored survival time variable. Here we will use a log transformed survival time.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">library</span>(mice)</span>
-<span id="cb6-2"><a href="#cb6-2"></a>vv2015_mod &lt;-<span class="st"> </span>vv2015 <span class="op">%&gt;%</span></span>
-<span id="cb6-3"><a href="#cb6-3"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">log_y =</span> <span class="kw">log</span>(y)) <span class="op">%&gt;%</span></span>
-<span id="cb6-4"><a href="#cb6-4"></a><span class="st">    </span><span class="kw">select</span>(x,m,c,log_y,event)</span>
-<span id="cb6-5"><a href="#cb6-5"></a><span class="co">## Run mice</span></span>
-<span id="cb6-6"><a href="#cb6-6"></a>vv2015_mice &lt;-<span class="st"> </span><span class="kw">mice</span>(<span class="dt">data =</span> vv2015_mod, <span class="dt">m =</span> <span class="dv">50</span>, <span class="dt">printFlag =</span> <span class="ot">FALSE</span>)</span>
-<span id="cb6-7"><a href="#cb6-7"></a><span class="co">## Object containig 50 imputed dataset</span></span>
-<span id="cb6-8"><a href="#cb6-8"></a>vv2015_mice</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mice)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>vv2015_mod <span class="ot">&lt;-</span> vv2015 <span class="sc">%&gt;%</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">log_y =</span> <span class="fu">log</span>(y)) <span class="sc">%&gt;%</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(x,m,c,log_y,event)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Run mice</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>vv2015_mice <span class="ot">&lt;-</span> <span class="fu">mice</span>(<span class="at">data =</span> vv2015_mod, <span class="at">m =</span> <span class="dv">50</span>, <span class="at">printFlag =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Object containig 50 imputed dataset</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>vv2015_mice</span></code></pre></div>
 <pre><code>## Class: mids
 ## Number of multiple imputations:  50 
 ## Imputation methods:
@@ -539,84 +587,84 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## log_y 1 1 1     0     1
 ## event 1 1 1     1     0</code></pre>
 <p>After creating such MI datasets, mediation analysis can be performed in each dataset.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">## Fit in each MI dataset</span></span>
-<span id="cb8-2"><a href="#cb8-2"></a>vv2015_mice_regmedint &lt;-</span>
-<span id="cb8-3"><a href="#cb8-3"></a><span class="st">    </span>vv2015_mice <span class="op">%&gt;%</span></span>
-<span id="cb8-4"><a href="#cb8-4"></a><span class="st">    </span><span class="co">## Stacked up dataset</span></span>
-<span id="cb8-5"><a href="#cb8-5"></a><span class="st">    </span>mice<span class="op">::</span><span class="kw">complete</span>(<span class="st">&quot;long&quot;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb8-6"><a href="#cb8-6"></a><span class="st">    </span><span class="kw">as_tibble</span>() <span class="op">%&gt;%</span></span>
-<span id="cb8-7"><a href="#cb8-7"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">y =</span> <span class="kw">exp</span>(log_y)) <span class="op">%&gt;%</span></span>
-<span id="cb8-8"><a href="#cb8-8"></a><span class="st">    </span><span class="kw">group_by</span>(.imp) <span class="op">%&gt;%</span></span>
-<span id="cb8-9"><a href="#cb8-9"></a><span class="st">    </span><span class="co">## Nested data frame</span></span>
-<span id="cb8-10"><a href="#cb8-10"></a><span class="st">    </span><span class="kw">nest</span>() <span class="op">%&gt;%</span></span>
-<span id="cb8-11"><a href="#cb8-11"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">fit =</span> <span class="kw">map</span>(data, <span class="cf">function</span>(data) {</span>
-<span id="cb8-12"><a href="#cb8-12"></a>        <span class="kw">regmedint</span>(<span class="dt">data =</span> data,</span>
-<span id="cb8-13"><a href="#cb8-13"></a>                  <span class="co">## Variables</span></span>
-<span id="cb8-14"><a href="#cb8-14"></a>                  <span class="dt">yvar =</span> <span class="st">&quot;y&quot;</span>,</span>
-<span id="cb8-15"><a href="#cb8-15"></a>                  <span class="dt">avar =</span> <span class="st">&quot;x&quot;</span>,</span>
-<span id="cb8-16"><a href="#cb8-16"></a>                  <span class="dt">mvar =</span> <span class="st">&quot;m&quot;</span>,</span>
-<span id="cb8-17"><a href="#cb8-17"></a>                  <span class="dt">cvar =</span> <span class="kw">c</span>(<span class="st">&quot;c&quot;</span>),</span>
-<span id="cb8-18"><a href="#cb8-18"></a>                  <span class="dt">eventvar =</span> <span class="st">&quot;event&quot;</span>,</span>
-<span id="cb8-19"><a href="#cb8-19"></a>                  <span class="co">## Values at which effects are evaluated</span></span>
-<span id="cb8-20"><a href="#cb8-20"></a>                  <span class="dt">a0 =</span> <span class="dv">0</span>,</span>
-<span id="cb8-21"><a href="#cb8-21"></a>                  <span class="dt">a1 =</span> <span class="dv">1</span>,</span>
-<span id="cb8-22"><a href="#cb8-22"></a>                  <span class="dt">m_cde =</span> <span class="dv">1</span>,</span>
-<span id="cb8-23"><a href="#cb8-23"></a>                  <span class="dt">c_cond =</span> <span class="fl">0.5</span>,</span>
-<span id="cb8-24"><a href="#cb8-24"></a>                  <span class="co">## Model types</span></span>
-<span id="cb8-25"><a href="#cb8-25"></a>                  <span class="dt">mreg =</span> <span class="st">&quot;logistic&quot;</span>,</span>
-<span id="cb8-26"><a href="#cb8-26"></a>                  <span class="dt">yreg =</span> <span class="st">&quot;survAFT_weibull&quot;</span>,</span>
-<span id="cb8-27"><a href="#cb8-27"></a>                  <span class="co">## Additional specification</span></span>
-<span id="cb8-28"><a href="#cb8-28"></a>                  <span class="dt">interaction =</span> <span class="ot">TRUE</span>,</span>
-<span id="cb8-29"><a href="#cb8-29"></a>                  <span class="dt">casecontrol =</span> <span class="ot">FALSE</span>)</span>
-<span id="cb8-30"><a href="#cb8-30"></a>    })) <span class="op">%&gt;%</span></span>
-<span id="cb8-31"><a href="#cb8-31"></a><span class="st">    </span><span class="co">## Extract point estimates and variance estimates</span></span>
-<span id="cb8-32"><a href="#cb8-32"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">coef_fit =</span> <span class="kw">map</span>(fit, coef),</span>
-<span id="cb8-33"><a href="#cb8-33"></a>           <span class="dt">vcov_fit =</span> <span class="kw">map</span>(fit, vcov))</span>
-<span id="cb8-34"><a href="#cb8-34"></a>vv2015_mice_regmedint</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Fit in each MI dataset</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>vv2015_mice_regmedint <span class="ot">&lt;-</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    vv2015_mice <span class="sc">%&gt;%</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="do">## Stacked up dataset</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    mice<span class="sc">::</span><span class="fu">complete</span>(<span class="st">&quot;long&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">y =</span> <span class="fu">exp</span>(log_y)) <span class="sc">%&gt;%</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(.imp) <span class="sc">%&gt;%</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="do">## Nested data frame</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">nest</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">fit =</span> <span class="fu">map</span>(data, <span class="cf">function</span>(data) {</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        <span class="fu">regmedint</span>(<span class="at">data =</span> data,</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>                  <span class="do">## Variables</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>                  <span class="at">yvar =</span> <span class="st">&quot;y&quot;</span>,</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>                  <span class="at">avar =</span> <span class="st">&quot;x&quot;</span>,</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>                  <span class="at">mvar =</span> <span class="st">&quot;m&quot;</span>,</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>                  <span class="at">cvar =</span> <span class="fu">c</span>(<span class="st">&quot;c&quot;</span>),</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>                  <span class="at">eventvar =</span> <span class="st">&quot;event&quot;</span>,</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>                  <span class="do">## Values at which effects are evaluated</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>                  <span class="at">a0 =</span> <span class="dv">0</span>,</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>                  <span class="at">a1 =</span> <span class="dv">1</span>,</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>                  <span class="at">m_cde =</span> <span class="dv">1</span>,</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>                  <span class="at">c_cond =</span> <span class="fl">0.5</span>,</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>                  <span class="do">## Model types</span></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>                  <span class="at">mreg =</span> <span class="st">&quot;logistic&quot;</span>,</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>                  <span class="at">yreg =</span> <span class="st">&quot;survAFT_weibull&quot;</span>,</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>                  <span class="do">## Additional specification</span></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>                  <span class="at">interaction =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>                  <span class="at">casecontrol =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>    })) <span class="sc">%&gt;%</span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>    <span class="do">## Extract point estimates and variance estimates</span></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">coef_fit =</span> <span class="fu">map</span>(fit, coef),</span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>           <span class="at">vcov_fit =</span> <span class="fu">map</span>(fit, vcov))</span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>vv2015_mice_regmedint</span></code></pre></div>
 <pre><code>## # A tibble: 50 x 5
 ## # Groups:   .imp [50]
-##     .imp data               fit        coef_fit  vcov_fit         
-##    &lt;int&gt; &lt;list&gt;             &lt;list&gt;     &lt;list&gt;    &lt;list&gt;           
-##  1     1 &lt;tibble [100 × 7]&gt; &lt;regmednt&gt; &lt;dbl [7]&gt; &lt;dbl[,7] [7 × 7]&gt;
-##  2     2 &lt;tibble [100 × 7]&gt; &lt;regmednt&gt; &lt;dbl [7]&gt; &lt;dbl[,7] [7 × 7]&gt;
-##  3     3 &lt;tibble [100 × 7]&gt; &lt;regmednt&gt; &lt;dbl [7]&gt; &lt;dbl[,7] [7 × 7]&gt;
-##  4     4 &lt;tibble [100 × 7]&gt; &lt;regmednt&gt; &lt;dbl [7]&gt; &lt;dbl[,7] [7 × 7]&gt;
-##  5     5 &lt;tibble [100 × 7]&gt; &lt;regmednt&gt; &lt;dbl [7]&gt; &lt;dbl[,7] [7 × 7]&gt;
-##  6     6 &lt;tibble [100 × 7]&gt; &lt;regmednt&gt; &lt;dbl [7]&gt; &lt;dbl[,7] [7 × 7]&gt;
-##  7     7 &lt;tibble [100 × 7]&gt; &lt;regmednt&gt; &lt;dbl [7]&gt; &lt;dbl[,7] [7 × 7]&gt;
-##  8     8 &lt;tibble [100 × 7]&gt; &lt;regmednt&gt; &lt;dbl [7]&gt; &lt;dbl[,7] [7 × 7]&gt;
-##  9     9 &lt;tibble [100 × 7]&gt; &lt;regmednt&gt; &lt;dbl [7]&gt; &lt;dbl[,7] [7 × 7]&gt;
-## 10    10 &lt;tibble [100 × 7]&gt; &lt;regmednt&gt; &lt;dbl [7]&gt; &lt;dbl[,7] [7 × 7]&gt;
+##     .imp data               fit            coef_fit  vcov_fit         
+##    &lt;int&gt; &lt;list&gt;             &lt;list&gt;         &lt;list&gt;    &lt;list&gt;           
+##  1     1 &lt;tibble [100 × 7]&gt; &lt;regmednt [4]&gt; &lt;dbl [7]&gt; &lt;dbl[,7] [7 × 7]&gt;
+##  2     2 &lt;tibble [100 × 7]&gt; &lt;regmednt [4]&gt; &lt;dbl [7]&gt; &lt;dbl[,7] [7 × 7]&gt;
+##  3     3 &lt;tibble [100 × 7]&gt; &lt;regmednt [4]&gt; &lt;dbl [7]&gt; &lt;dbl[,7] [7 × 7]&gt;
+##  4     4 &lt;tibble [100 × 7]&gt; &lt;regmednt [4]&gt; &lt;dbl [7]&gt; &lt;dbl[,7] [7 × 7]&gt;
+##  5     5 &lt;tibble [100 × 7]&gt; &lt;regmednt [4]&gt; &lt;dbl [7]&gt; &lt;dbl[,7] [7 × 7]&gt;
+##  6     6 &lt;tibble [100 × 7]&gt; &lt;regmednt [4]&gt; &lt;dbl [7]&gt; &lt;dbl[,7] [7 × 7]&gt;
+##  7     7 &lt;tibble [100 × 7]&gt; &lt;regmednt [4]&gt; &lt;dbl [7]&gt; &lt;dbl[,7] [7 × 7]&gt;
+##  8     8 &lt;tibble [100 × 7]&gt; &lt;regmednt [4]&gt; &lt;dbl [7]&gt; &lt;dbl[,7] [7 × 7]&gt;
+##  9     9 &lt;tibble [100 × 7]&gt; &lt;regmednt [4]&gt; &lt;dbl [7]&gt; &lt;dbl[,7] [7 × 7]&gt;
+## 10    10 &lt;tibble [100 × 7]&gt; &lt;regmednt [4]&gt; &lt;dbl [7]&gt; &lt;dbl[,7] [7 × 7]&gt;
 ## # … with 40 more rows</code></pre>
 <p>The results can be combined using the mitools package.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>regmedint_mi &lt;-<span class="st"> </span>mitools<span class="op">::</span><span class="kw">MIcombine</span>(<span class="dt">results =</span> vv2015_mice_regmedint<span class="op">$</span>coef_fit,</span>
-<span id="cb10-2"><a href="#cb10-2"></a>                                   <span class="dt">variances =</span> vv2015_mice_regmedint<span class="op">$</span>vcov_fit)</span>
-<span id="cb10-3"><a href="#cb10-3"></a>regmedint_mi_summary &lt;-<span class="st"> </span><span class="kw">summary</span>(regmedint_mi)</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>regmedint_mi <span class="ot">&lt;-</span> mitools<span class="sc">::</span><span class="fu">MIcombine</span>(<span class="at">results =</span> vv2015_mice_regmedint<span class="sc">$</span>coef_fit,</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">variances =</span> vv2015_mice_regmedint<span class="sc">$</span>vcov_fit)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>regmedint_mi_summary <span class="ot">&lt;-</span> <span class="fu">summary</span>(regmedint_mi)</span></code></pre></div>
 <pre><code>## Multiple imputation results:
 ##       MIcombine.default(results = vv2015_mice_regmedint$coef_fit, variances = vv2015_mice_regmedint$vcov_fit)
-##          results         se      (lower     upper) missInfo
-## cde  0.364444513 0.31285436 -0.24886705 0.97775608      9 %
-## pnde 0.490086249 0.21309992  0.07241792 0.90775458      0 %
-## tnie 0.003130126 0.03166385 -0.05896404 0.06522429     15 %
-## tnde 0.482592943 0.21622030  0.05880487 0.90638102      2 %
-## pnie 0.010623432 0.06015876 -0.10748936 0.12873622     27 %
-## te   0.493216375 0.21374378  0.07428624 0.91214651      0 %
-## pm   0.007737162 0.03500720 -0.06200195 0.07747628     81 %</code></pre>
+##         results         se      (lower     upper) missInfo
+## cde  0.35334826 0.31280990 -0.25988229 0.96657881      9 %
+## pnde 0.48716281 0.21292928  0.06982892 0.90449669      0 %
+## tnie 0.00486299 0.03096690 -0.05584982 0.06557580     11 %
+## tnde 0.47324382 0.21699611  0.04793551 0.89855213      2 %
+## pnie 0.01878197 0.06178469 -0.10246510 0.14002905     23 %
+## te   0.49202580 0.21430966  0.07198654 0.91206506      0 %
+## pm   0.01232649 0.03060726 -0.04852257 0.07317555     76 %</code></pre>
 </div>
 <div id="comparison" class="section level2">
 <h2>Comparison</h2>
 <p>We can observe the MI estimtates are generally more in alignment with the true estimates than the complete-case analysis estimates.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="kw">cbind</span>(<span class="dt">true =</span> <span class="kw">coef</span>(regmedint_true),</span>
-<span id="cb12-2"><a href="#cb12-2"></a>      <span class="dt">cca =</span> <span class="kw">coef</span>(regmedint_cca),</span>
-<span id="cb12-3"><a href="#cb12-3"></a>      <span class="dt">mi =</span> regmedint_mi_summary<span class="op">$</span>results)</span></code></pre></div>
-<pre><code>##             true         cca          mi
-## cde  0.541070807 0.463323084 0.364444513
-## pnde 0.488930417 0.582515084 0.490086249
-## tnie 0.018240025 0.006182822 0.003130126
-## tnde 0.498503455 0.574385442 0.482592943
-## pnie 0.008666987 0.014312464 0.010623432
-## te   0.507170442 0.588697906 0.493216375
-## pm   0.045436278 0.013852661 0.007737162</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(<span class="at">true =</span> <span class="fu">coef</span>(regmedint_true),</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>      <span class="at">cca =</span> <span class="fu">coef</span>(regmedint_cca),</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>      <span class="at">mi =</span> regmedint_mi_summary<span class="sc">$</span>results)</span></code></pre></div>
+<pre><code>##             true         cca         mi
+## cde  0.541070807 0.463323084 0.35334826
+## pnde 0.488930417 0.582515084 0.48716281
+## tnie 0.018240025 0.006182822 0.00486299
+## tnde 0.498503455 0.574385442 0.47324382
+## pnie 0.008666987 0.014312464 0.01878197
+## te   0.507170442 0.588697906 0.49202580
+## pm   0.045436278 0.013852661 0.01232649</code></pre>
 </div>
 
 

@@ -12,7 +12,7 @@
 
 <meta name="author" content="Kazuki Yoshida" />
 
-<meta name="date" content="2020-05-07" />
+<meta name="date" content="2020-11-16" />
 
 <title>Implementation of formulas</title>
 
@@ -29,6 +29,54 @@ document.addEventListener('DOMContentLoaded', function(e) {
   }
 });
 </script>
+<style type="text/css">
+a.anchor-section {margin-left: 10px; visibility: hidden; color: inherit;}
+a.anchor-section::before {content: '#';}
+.hasAnchor:hover a.anchor-section {visibility: visible;}
+</style>
+<script>// Anchor sections v1.0 written by Atsushi Yasumoto on Oct 3rd, 2020.
+document.addEventListener('DOMContentLoaded', function() {
+  // Do nothing if AnchorJS is used
+  if (typeof window.anchors === 'object' && anchors.hasOwnProperty('hasAnchorJSLink')) {
+    return;
+  }
+
+  const h = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+  // Do nothing if sections are already anchored
+  if (Array.from(h).some(x => x.classList.contains('hasAnchor'))) {
+    return null;
+  }
+
+  // Use section id when pandoc runs with --section-divs
+  const section_id = function(x) {
+    return ((x.classList.contains('section') || (x.tagName === 'SECTION'))
+            ? x.id : '');
+  };
+
+  // Add anchors
+  h.forEach(function(x) {
+    const id = x.id || section_id(x.parentElement);
+    if (id === '') {
+      return null;
+    }
+    let anchor = document.createElement('a');
+    anchor.href = '#' + id;
+    anchor.classList = ['anchor-section'];
+    x.classList.add('hasAnchor');
+    x.appendChild(anchor);
+  });
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 
 <style type="text/css">code{white-space: pre;}</style>
@@ -315,7 +363,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Implementation of formulas</h1>
 <h4 class="author">Kazuki Yoshida</h4>
-<h4 class="date">2020-05-07</h4>
+<h4 class="date">2020-11-16</h4>
 
 
 
@@ -325,7 +373,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p>These functions are only used in the setting where both the mediator model and the outcome model are linear regression.</p>
 <div id="point-estimates" class="section level2">
 <h2>Point estimates</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>regmedint<span class="op">:::</span>calc_myreg_mreg_linear_yreg_linear_est</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>regmedint<span class="sc">:::</span>calc_myreg_mreg_linear_yreg_linear_est</span></code></pre></div>
 <pre><code>## function (beta0, beta1, beta2, theta0, theta1, theta2, theta3, 
 ##     theta4) 
 ## {
@@ -359,12 +407,12 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ##     }
 ##     return(fun_est)
 ## }
-## &lt;bytecode: 0x7fcd49b32438&gt;
+## &lt;bytecode: 0x7fc46afa6630&gt;
 ## &lt;environment: namespace:regmedint&gt;</code></pre>
 </div>
 <div id="standard-error-estimates" class="section level2">
 <h2>Standard error estimates</h2>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>regmedint<span class="op">:::</span>calc_myreg_mreg_linear_yreg_linear_se</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>regmedint<span class="sc">:::</span>calc_myreg_mreg_linear_yreg_linear_se</span></code></pre></div>
 <pre><code>## function (beta0, beta1, beta2, theta0, theta1, theta2, theta3, 
 ##     theta4, Sigma_beta, Sigma_theta) 
 ## {
@@ -430,7 +478,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ##     }
 ##     return(fun_se)
 ## }
-## &lt;bytecode: 0x7fcd49300ac8&gt;
+## &lt;bytecode: 0x7fc4694cee78&gt;
 ## &lt;environment: namespace:regmedint&gt;</code></pre>
 </div>
 </div>
@@ -439,7 +487,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p>These functions are used in all cases where the mediator model is linear regression and the outcome model is any one of the non-linear models.</p>
 <div id="point-estimates-1" class="section level2">
 <h2>Point estimates</h2>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>regmedint<span class="op">:::</span>calc_myreg_mreg_linear_yreg_logistic_est</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>regmedint<span class="sc">:::</span>calc_myreg_mreg_linear_yreg_logistic_est</span></code></pre></div>
 <pre><code>## function (beta0, beta1, beta2, theta0, theta1, theta2, theta3, 
 ##     theta4, sigma_sq) 
 ## {
@@ -477,12 +525,12 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ##     }
 ##     return(fun_est)
 ## }
-## &lt;bytecode: 0x7fcd6a2f30d0&gt;
+## &lt;bytecode: 0x7fc469575c18&gt;
 ## &lt;environment: namespace:regmedint&gt;</code></pre>
 </div>
 <div id="standard-error-estimates-1" class="section level2">
 <h2>Standard error estimates</h2>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>regmedint<span class="op">:::</span>calc_myreg_mreg_linear_yreg_logistic_se</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>regmedint<span class="sc">:::</span>calc_myreg_mreg_linear_yreg_logistic_se</span></code></pre></div>
 <pre><code>## function (beta0, beta1, beta2, theta0, theta1, theta2, theta3, 
 ##     theta4, sigma_sq, Sigma_beta, Sigma_theta, Sigma_sigma_sq) 
 ## {
@@ -555,7 +603,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ##     }
 ##     return(fun_se)
 ## }
-## &lt;bytecode: 0x7fcd2cec6c10&gt;
+## &lt;bytecode: 0x7fc4697cc580&gt;
 ## &lt;environment: namespace:regmedint&gt;</code></pre>
 </div>
 </div>
@@ -564,7 +612,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p>These functions are only used in the setting where the mediator model is logistic regression and the outcome model is non-linear regression.</p>
 <div id="point-estimates-2" class="section level2">
 <h2>Point estimates</h2>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>regmedint<span class="op">:::</span>calc_myreg_mreg_logistic_yreg_linear_est</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>regmedint<span class="sc">:::</span>calc_myreg_mreg_logistic_yreg_linear_est</span></code></pre></div>
 <pre><code>## function (beta0, beta1, beta2, theta0, theta1, theta2, theta3, 
 ##     theta4) 
 ## {
@@ -604,12 +652,12 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ##     }
 ##     return(fun_est)
 ## }
-## &lt;bytecode: 0x7fcd2f14d258&gt;
+## &lt;bytecode: 0x7fc46b821a40&gt;
 ## &lt;environment: namespace:regmedint&gt;</code></pre>
 </div>
 <div id="standard-error-estimates-2" class="section level2">
 <h2>Standard error estimates</h2>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>regmedint<span class="op">:::</span>calc_myreg_mreg_logistic_yreg_linear_se</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>regmedint<span class="sc">:::</span>calc_myreg_mreg_logistic_yreg_linear_se</span></code></pre></div>
 <pre><code>## function (beta0, beta1, beta2, theta0, theta1, theta2, theta3, 
 ##     theta4, Sigma_beta, Sigma_theta) 
 ## {
@@ -728,7 +776,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ##     }
 ##     return(fun_se)
 ## }
-## &lt;bytecode: 0x7fcd2f310180&gt;
+## &lt;bytecode: 0x7fc46b11c378&gt;
 ## &lt;environment: namespace:regmedint&gt;</code></pre>
 </div>
 </div>
@@ -737,7 +785,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p>These functions are used in all cases where the mediator model is logistic regression and the outcome model is any one of the non-linear models.</p>
 <div id="point-estimates-3" class="section level2">
 <h2>Point estimates</h2>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>regmedint<span class="op">:::</span>calc_myreg_mreg_logistic_yreg_logistic_est</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>regmedint<span class="sc">:::</span>calc_myreg_mreg_logistic_yreg_logistic_est</span></code></pre></div>
 <pre><code>## function (beta0, beta1, beta2, theta0, theta1, theta2, theta3, 
 ##     theta4) 
 ## {
@@ -781,12 +829,12 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ##     }
 ##     return(fun_est)
 ## }
-## &lt;bytecode: 0x7fcd3ac76a20&gt;
+## &lt;bytecode: 0x7fc469e7e808&gt;
 ## &lt;environment: namespace:regmedint&gt;</code></pre>
 </div>
 <div id="standard-error-estimates-3" class="section level2">
 <h2>Standard error estimates</h2>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>regmedint<span class="op">:::</span>calc_myreg_mreg_logistic_yreg_logistic_se</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>regmedint<span class="sc">:::</span>calc_myreg_mreg_logistic_yreg_logistic_se</span></code></pre></div>
 <pre><code>## function (beta0, beta1, beta2, theta0, theta1, theta2, theta3, 
 ##     theta4, Sigma_beta, Sigma_theta) 
 ## {
@@ -916,7 +964,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ##     }
 ##     return(fun_se)
 ## }
-## &lt;bytecode: 0x7fcd3acd7040&gt;
+## &lt;bytecode: 0x7fc469f14710&gt;
 ## &lt;environment: namespace:regmedint&gt;</code></pre>
 </div>
 </div>
