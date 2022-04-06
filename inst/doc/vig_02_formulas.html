@@ -12,11 +12,23 @@
 
 <meta name="author" content="Kazuki Yoshida" />
 
-<meta name="date" content="2021-05-11" />
+<meta name="date" content="2022-04-06" />
 
 <title>Implementation of formulas</title>
 
-<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -26,6 +38,7 @@
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
     </style>
+
 
 
 <style type="text/css">
@@ -40,7 +53,6 @@
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
@@ -127,7 +139,187 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
-<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
 
 
 
@@ -141,7 +333,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <h1 class="title toc-ignore">Implementation of formulas</h1>
 <h4 class="author">Kazuki Yoshida</h4>
-<h4 class="date">2021-05-11</h4>
+<h4 class="date">2022-04-06</h4>
 
 
 
@@ -152,12 +344,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="point-estimates" class="section level2">
 <h2>Point estimates</h2>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>regmedint<span class="sc">:::</span>calc_myreg_mreg_linear_yreg_linear_est</span></code></pre></div>
-<pre><code>## function (beta0, beta1, beta2, theta0, theta1, theta2, theta3, 
-##     theta4) 
+<pre><code>## function (beta0, beta1, beta2, beta3, theta0, theta1, theta2, 
+##     theta3, theta4, theta5, theta6) 
 ## {
 ##     validate_myreg_coefs(beta0 = beta0, beta1 = beta1, beta2 = beta2, 
-##         theta0 = theta0, theta1 = theta1, theta2 = theta2, theta3 = theta3, 
-##         theta4 = theta4)
+##         beta3 = beta3, theta0 = theta0, theta1 = theta1, theta2 = theta2, 
+##         theta3 = theta3, theta4 = theta4, theta5 = theta5, theta6 = theta6)
 ##     fun_est &lt;- function(a0, a1, m_cde, c_cond) {
 ##         if (is.null(beta2)) {
 ##             assertthat::assert_that(is.null(c_cond))
@@ -168,15 +360,45 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##             assertthat::assert_that(length(c_cond) == length(beta2))
 ##             beta2_c &lt;- sum(t(matrix(beta2)) %*% matrix(c_cond))
 ##         }
-##         cde &lt;- (theta1 + (theta3 * m_cde)) * (a1 - a0)
-##         pnde &lt;- (theta1 + (theta3 * beta0) + (theta3 * beta1 * 
-##             a0) + (theta3 * beta2_c)) * (a1 - a0)
-##         tnie &lt;- ((theta2 * beta1) + (theta3 * beta1 * a1)) * 
-##             (a1 - a0)
-##         tnde &lt;- (theta1 + (theta3 * beta0) + (theta3 * beta1 * 
-##             a1) + (theta3 * beta2_c)) * (a1 - a0)
-##         pnie &lt;- ((theta2 * beta1) + (theta3 * beta1 * a0)) * 
-##             (a1 - a0)
+##         if (is.null(beta3)) {
+##             beta3_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(length(c_cond) == length(beta3))
+##             beta3_c &lt;- sum(t(matrix(beta3)) %*% matrix(c_cond))
+##         }
+##         if (is.null(theta4)) {
+##             assertthat::assert_that(is.null(c_cond))
+##             theta4_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(!is.null(c_cond))
+##             assertthat::assert_that(length(c_cond) == length(theta4))
+##             theta4_c &lt;- sum(t(matrix(theta4)) %*% matrix(c_cond))
+##         }
+##         if (is.null(theta5)) {
+##             theta5_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(length(c_cond) == length(theta5))
+##             theta5_c &lt;- sum(t(matrix(theta5)) %*% matrix(c_cond))
+##         }
+##         if (is.null(theta6)) {
+##             theta6_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(length(c_cond) == length(theta6))
+##             theta6_c &lt;- sum(t(matrix(theta6)) %*% matrix(c_cond))
+##         }
+##         cde &lt;- (theta1 + theta3 * m_cde + theta5_c) * (a1 - a0)
+##         pnde &lt;- (theta1 + theta3 * (beta0 + beta1 * a0 + beta2_c + 
+##             beta3_c * a0) + theta5_c) * (a1 - a0)
+##         tnie &lt;- (theta2 + theta3 * a1 + theta6_c) * (beta1 + 
+##             beta3_c) * (a1 - a0)
+##         tnde &lt;- (theta1 + theta3 * (beta0 + beta1 * a1 + beta2_c + 
+##             beta3_c * a1) + theta5_c) * (a1 - a0)
+##         pnie &lt;- (theta2 + theta3 * a0 + theta6_c) * (beta1 + 
+##             beta3_c) * (a1 - a0)
 ##         te &lt;- pnde + tnie
 ##         pm &lt;- tnie/te
 ##         c(cde = unname(cde), pnde = unname(pnde), tnie = unname(tnie), 
@@ -185,21 +407,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##     }
 ##     return(fun_est)
 ## }
-## &lt;bytecode: 0x7f9f11272008&gt;
+## &lt;bytecode: 0x7fa5a56b3350&gt;
 ## &lt;environment: namespace:regmedint&gt;</code></pre>
 </div>
 <div id="standard-error-estimates" class="section level2">
 <h2>Standard error estimates</h2>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>regmedint<span class="sc">:::</span>calc_myreg_mreg_linear_yreg_linear_se</span></code></pre></div>
-<pre><code>## function (beta0, beta1, beta2, theta0, theta1, theta2, theta3, 
-##     theta4, Sigma_beta, Sigma_theta) 
+<pre><code>## function (beta0, beta1, beta2, beta3, theta0, theta1, theta2, 
+##     theta3, theta4, theta5, theta6, Sigma_beta, Sigma_theta) 
 ## {
 ##     validate_myreg_coefs(beta0 = beta0, beta1 = beta1, beta2 = beta2, 
-##         theta0 = theta0, theta1 = theta1, theta2 = theta2, theta3 = theta3, 
-##         theta4 = theta4)
+##         beta3 = beta3, theta0 = theta0, theta1 = theta1, theta2 = theta2, 
+##         theta3 = theta3, theta4 = theta4, theta5 = theta5, theta6 = theta6)
 ##     validate_myreg_vcovs(beta0 = beta0, beta1 = beta1, beta2 = beta2, 
-##         theta0 = theta0, theta1 = theta1, theta2 = theta2, theta3 = theta3, 
-##         theta4 = theta4, Sigma_beta = Sigma_beta, Sigma_theta = Sigma_theta)
+##         beta3 = beta3, theta0 = theta0, theta1 = theta1, theta2 = theta2, 
+##         theta3 = theta3, theta4 = theta4, theta5 = theta5, theta6 = theta6, 
+##         Sigma_beta = Sigma_beta, Sigma_theta = Sigma_theta)
 ##     Sigma &lt;- Matrix::bdiag(Sigma_beta, Sigma_theta)
 ##     fun_se &lt;- function(a0, a1, m_cde, c_cond) {
 ##         if (is.null(beta2)) {
@@ -211,25 +434,116 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##             assertthat::assert_that(length(c_cond) == length(beta2))
 ##             beta2_c &lt;- sum(t(matrix(beta2)) %*% matrix(c_cond))
 ##         }
-##         Gamma_cde &lt;- matrix(c(0, 0, rep(0, length(beta2)), 0, 
-##             1, 0, m_cde, rep(0, length(theta4))))
-##         Gamma_pnde &lt;- matrix(c(theta3, (theta3 * a0), (theta3 * 
-##             c_cond), 0, 1, 0, (beta0 + (beta1 * a0) + beta2_c), 
-##             rep(0, length(theta4))))
-##         Gamma_tnie &lt;- matrix(c(0, (theta2 + (theta3 * a1)), rep(0, 
-##             length(beta2)), 0, 0, beta1, (beta1 * a1), rep(0, 
-##             length(theta4))))
-##         Gamma_tnde &lt;- matrix(c(theta3, (theta3 * a1), (theta3 * 
-##             c_cond), 0, 1, 0, (beta0 + (beta1 * a1) + beta2_c), 
-##             rep(0, length(theta4))))
-##         Gamma_pnie &lt;- matrix(c(0, (theta2 + (theta3 * a0)), rep(0, 
-##             length(beta2)), 0, 0, beta1, (beta1 * a0), rep(0, 
-##             length(theta4))))
+##         if (is.null(beta3)) {
+##             beta3_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(length(c_cond) == length(beta3))
+##             beta3_c &lt;- sum(t(matrix(beta3)) %*% matrix(c_cond))
+##         }
+##         if (is.null(theta4)) {
+##             assertthat::assert_that(is.null(c_cond))
+##             theta4_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(!is.null(c_cond))
+##             assertthat::assert_that(length(c_cond) == length(theta4))
+##             theta4_c &lt;- sum(t(matrix(theta4)) %*% matrix(c_cond))
+##         }
+##         if (is.null(theta5)) {
+##             theta5_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(length(c_cond) == length(theta5))
+##             theta5_c &lt;- sum(t(matrix(theta5)) %*% matrix(c_cond))
+##         }
+##         if (is.null(theta6)) {
+##             theta6_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(length(c_cond) == length(theta6))
+##             theta6_c &lt;- sum(t(matrix(theta6)) %*% matrix(c_cond))
+##         }
+##         if (is.null(theta5)) {
+##             pd_cde_theta5 &lt;- rep(0, length(theta5))
+##         }
+##         else {
+##             pd_cde_theta5 &lt;- c_cond
+##         }
+##         Gamma_cde &lt;- matrix(c(0, 0, rep(0, length(beta2)), rep(0, 
+##             length(beta3)), 0, 1, 0, m_cde, rep(0, length(theta4)), 
+##             pd_cde_theta5, rep(0, length(theta6))))
+##         if (is.null(beta3)) {
+##             pd_pnde_beta3 &lt;- rep(0, length(beta3))
+##         }
+##         else {
+##             pd_pnde_beta3 &lt;- theta3 * c_cond
+##         }
+##         if (is.null(theta5)) {
+##             pd_pnde_theta5 &lt;- rep(0, length(theta5))
+##         }
+##         else {
+##             pd_pnde_theta5 &lt;- c_cond
+##         }
+##         Gamma_pnde &lt;- matrix(c(theta3, theta3 * a0, theta3 * 
+##             c_cond, pd_pnde_beta3, 0, 1, 0, beta0 + beta1 * a0 + 
+##             beta2_c + beta3_c * a0, rep(0, length(theta4)), pd_pnde_theta5, 
+##             rep(0, length(theta6))))
+##         if (is.null(beta3)) {
+##             pd_tnie_beta3 &lt;- rep(0, length(beta3))
+##         }
+##         else {
+##             pd_tnie_beta3 &lt;- c_cond * (theta2 + theta3 * a1 + 
+##                 theta6_c)
+##         }
+##         if (is.null(theta6)) {
+##             pd_tnie_theta6 &lt;- rep(0, length(theta6))
+##         }
+##         else {
+##             pd_tnie_theta6 &lt;- c_cond * (beta1 + beta3_c)
+##         }
+##         Gamma_tnie &lt;- matrix(c(0, theta2 + theta3 * a1 + theta6_c, 
+##             rep(0, length(beta2)), pd_tnie_beta3, 0, 0, beta1 + 
+##                 beta3_c, a1 * (beta1 + beta3_c), rep(0, length(theta4)), 
+##             rep(0, length(theta5)), pd_tnie_theta6))
+##         if (is.null(beta3)) {
+##             pd_tnde_beta3 &lt;- rep(0, length(beta3))
+##         }
+##         else {
+##             pd_tnde_beta3 &lt;- theta3 * a1 * c_cond
+##         }
+##         if (is.null(theta5)) {
+##             pd_tnde_theta5 &lt;- rep(0, length(theta5))
+##         }
+##         else {
+##             pd_tnde_theta5 &lt;- c_cond
+##         }
+##         Gamma_tnde &lt;- matrix(c(theta3, theta3 * a1, theta3 * 
+##             c_cond, pd_tnde_beta3, 0, 1, 0, beta0 + beta1 * a1 + 
+##             beta2_c + beta3_c * a1, rep(0, length(theta4)), pd_tnde_theta5, 
+##             rep(0, length(theta6))))
+##         if (is.null(beta3)) {
+##             pd_pnie_beta3 &lt;- rep(0, length(beta3))
+##         }
+##         else {
+##             pd_pnie_beta3 &lt;- c_cond * (theta2 + theta3 * a0 + 
+##                 theta6_c)
+##         }
+##         if (is.null(theta6)) {
+##             pd_pnie_theta6 &lt;- rep(0, length(theta6))
+##         }
+##         else {
+##             pd_pnie_theta6 &lt;- c_cond * (beta1 + beta3_c)
+##         }
+##         Gamma_pnie &lt;- matrix(c(0, theta2 + theta3 * a0 + theta6_c, 
+##             rep(0, length(beta2)), pd_pnie_beta3, 0, 0, beta1 + 
+##                 beta3_c, a0 * (beta1 + beta3_c), rep(0, length(theta4)), 
+##             rep(0, length(theta5)), pd_pnie_theta6))
 ##         Gamma_te &lt;- Gamma_pnde + Gamma_tnie
-##         pnde &lt;- (theta1 + (theta3 * beta0) + (theta3 * beta1 * 
-##             a0) + (theta3 * beta2_c)) * (a1 - a0)
-##         tnie &lt;- ((theta2 * beta1) + (theta3 * beta1 * a1)) * 
-##             (a1 - a0)
+##         pnde &lt;- (theta1 + theta3 * (beta0 + beta1 * a0 + beta2_c + 
+##             beta3_c * a0) + theta5_c) * (a1 - a0)
+##         tnie &lt;- (theta2 + theta3 * a1 + theta6_c) * (beta1 + 
+##             beta3_c) * (a1 - a0)
 ##         d_pm &lt;- grad_prop_med_yreg_linear(pnde = unname(pnde), 
 ##             tnie = unname(tnie))
 ##         Gamma_pm &lt;- (d_pm[[&quot;pnde&quot;]] * Gamma_pnde) + (d_pm[[&quot;tnie&quot;]] * 
@@ -256,7 +570,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##     }
 ##     return(fun_se)
 ## }
-## &lt;bytecode: 0x7f9f2623c550&gt;
+## &lt;bytecode: 0x7fa5ab332440&gt;
 ## &lt;environment: namespace:regmedint&gt;</code></pre>
 </div>
 </div>
@@ -266,12 +580,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="point-estimates-1" class="section level2">
 <h2>Point estimates</h2>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>regmedint<span class="sc">:::</span>calc_myreg_mreg_linear_yreg_logistic_est</span></code></pre></div>
-<pre><code>## function (beta0, beta1, beta2, theta0, theta1, theta2, theta3, 
-##     theta4, sigma_sq) 
+<pre><code>## function (beta0, beta1, beta2, beta3, theta0, theta1, theta2, 
+##     theta3, theta4, theta5, theta6, sigma_sq) 
 ## {
 ##     validate_myreg_coefs(beta0 = beta0, beta1 = beta1, beta2 = beta2, 
-##         theta0 = theta0, theta1 = theta1, theta2 = theta2, theta3 = theta3, 
-##         theta4 = theta4, sigma_sq = sigma_sq)
+##         beta3 = beta3, theta0 = theta0, theta1 = theta1, theta2 = theta2, 
+##         theta3 = theta3, theta4 = theta4, theta5 = theta5, theta6 = theta6, 
+##         sigma_sq = sigma_sq)
 ##     fun_est &lt;- function(a0, a1, m_cde, c_cond) {
 ##         if (is.null(beta2)) {
 ##             assertthat::assert_that(is.null(c_cond))
@@ -282,43 +597,76 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##             assertthat::assert_that(length(c_cond) == length(beta2))
 ##             beta2_c &lt;- sum(t(matrix(beta2)) %*% matrix(c_cond))
 ##         }
-##         cde &lt;- (theta1 + (theta3 * m_cde)) * (a1 - a0)
-##         pnde &lt;- (theta1 + (theta3 * beta0) + (theta3 * beta1 * 
-##             a0) + (theta3 * beta2_c) + (theta3 * theta2 * sigma_sq)) * 
-##             (a1 - a0) + ((1/2) * theta3^2 * sigma_sq) * (a1^2 - 
-##             a0^2)
-##         tnie &lt;- ((theta2 * beta1) + theta3 * beta1 * a1) * (a1 - 
-##             a0)
-##         tnde &lt;- (theta1 + (theta3 * beta0) + (theta3 * beta1 * 
-##             a1) + (theta3 * beta2_c) + (theta3 * theta2 * sigma_sq)) * 
-##             (a1 - a0) + ((1/2) * theta3^2 * sigma_sq) * (a1^2 - 
-##             a0^2)
-##         pnie &lt;- ((theta2 * beta1) + theta3 * beta1 * a0) * (a1 - 
-##             a0)
+##         if (is.null(beta3)) {
+##             beta3_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(length(c_cond) == length(beta3))
+##             beta3_c &lt;- sum(t(matrix(beta3)) %*% matrix(c_cond))
+##         }
+##         if (is.null(theta4)) {
+##             assertthat::assert_that(is.null(c_cond))
+##             theta4_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(!is.null(c_cond))
+##             assertthat::assert_that(length(c_cond) == length(theta4))
+##             theta4_c &lt;- sum(t(matrix(theta4)) %*% matrix(c_cond))
+##         }
+##         if (is.null(theta5)) {
+##             theta5_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(length(c_cond) == length(theta5))
+##             theta5_c &lt;- sum(t(matrix(theta5)) %*% matrix(c_cond))
+##         }
+##         if (is.null(theta6)) {
+##             theta6_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(length(c_cond) == length(theta6))
+##             theta6_c &lt;- sum(t(matrix(theta6)) %*% matrix(c_cond))
+##         }
+##         cde &lt;- (theta1 + theta3 * m_cde + theta5_c) * (a1 - a0)
+##         pnde &lt;- ((theta1 + theta5_c + theta3 * (beta0 + beta1 * 
+##             a0 + beta2_c + beta3_c * a0) + 1/2 * sigma_sq * theta3 * 
+##             (2 * theta2 + theta3 * a1 + theta3 * a0 + 2 * theta6_c))) * 
+##             (a1 - a0)
+##         tnie &lt;- (theta2 + theta3 * a1 + theta6_c) * (beta1 + 
+##             beta3_c) * (a1 - a0)
+##         tnde &lt;- ((theta1 + theta5_c + theta3 * (beta0 + beta1 * 
+##             a1 + beta2_c + beta3_c * a1) + 1/2 * sigma_sq * theta3 * 
+##             (2 * theta2 + theta3 * a1 + theta3 * a0 + 2 * theta6_c))) * 
+##             (a1 - a0)
+##         pnie &lt;- (theta2 + theta3 * a0 + theta6_c) * (beta1 + 
+##             beta3_c) * (a1 - a0)
 ##         te &lt;- pnde + tnie
-##         pm &lt;- (exp(pnde) * (exp(tnie) - 1))/(exp(te) - 1)
+##         pm &lt;- exp(pnde) * (exp(tnie) - 1)/(exp(te) - 1)
 ##         c(cde = unname(cde), pnde = unname(pnde), tnie = unname(tnie), 
 ##             tnde = unname(tnde), pnie = unname(pnie), te = unname(te), 
 ##             pm = unname(pm))
 ##     }
 ##     return(fun_est)
 ## }
-## &lt;bytecode: 0x7f9f12ff34e8&gt;
+## &lt;bytecode: 0x7fa5ab4bde88&gt;
 ## &lt;environment: namespace:regmedint&gt;</code></pre>
 </div>
 <div id="standard-error-estimates-1" class="section level2">
 <h2>Standard error estimates</h2>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>regmedint<span class="sc">:::</span>calc_myreg_mreg_linear_yreg_logistic_se</span></code></pre></div>
-<pre><code>## function (beta0, beta1, beta2, theta0, theta1, theta2, theta3, 
-##     theta4, sigma_sq, Sigma_beta, Sigma_theta, Sigma_sigma_sq) 
+<pre><code>## function (beta0, beta1, beta2, beta3, theta0, theta1, theta2, 
+##     theta3, theta4, theta5, theta6, sigma_sq, Sigma_beta, Sigma_theta, 
+##     Sigma_sigma_sq) 
 ## {
 ##     validate_myreg_coefs(beta0 = beta0, beta1 = beta1, beta2 = beta2, 
-##         theta0 = theta0, theta1 = theta1, theta2 = theta2, theta3 = theta3, 
-##         theta4 = theta4, sigma_sq = sigma_sq)
+##         beta3 = beta3, theta0 = theta0, theta1 = theta1, theta2 = theta2, 
+##         theta3 = theta3, theta4 = theta4, theta5 = theta5, theta6 = theta6, 
+##         sigma_sq = sigma_sq)
 ##     validate_myreg_vcovs(beta0 = beta0, beta1 = beta1, beta2 = beta2, 
-##         theta0 = theta0, theta1 = theta1, theta2 = theta2, theta3 = theta3, 
-##         theta4 = theta4, sigma_sq = sigma_sq, Sigma_beta = Sigma_beta, 
-##         Sigma_theta = Sigma_theta, Sigma_sigma_sq = Sigma_sigma_sq)
+##         beta3 = beta3, theta0 = theta0, theta1 = theta1, theta2 = theta2, 
+##         theta3 = theta3, theta4 = theta4, theta5 = theta5, theta6 = theta6, 
+##         sigma_sq = sigma_sq, Sigma_beta = Sigma_beta, Sigma_theta = Sigma_theta, 
+##         Sigma_sigma_sq = Sigma_sigma_sq)
 ##     Sigma &lt;- Matrix::bdiag(Sigma_beta, Sigma_theta, Sigma_sigma_sq)
 ##     fun_se &lt;- function(a0, a1, m_cde, c_cond) {
 ##         if (is.null(beta2)) {
@@ -330,31 +678,136 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##             assertthat::assert_that(length(c_cond) == length(beta2))
 ##             beta2_c &lt;- sum(t(matrix(beta2)) %*% matrix(c_cond))
 ##         }
-##         Gamma_cde &lt;- matrix(c(0, 0, rep(0, length(beta2)), 0, 
-##             1, 0, m_cde, rep(0, length(theta4)), 0))
-##         Gamma_pnde &lt;- matrix(c(theta3, (theta3 * a0), (theta3 * 
-##             c_cond), 0, 1, (theta3 * sigma_sq), (beta0 + beta1 * 
-##             a0 + beta2_c + theta2 * sigma_sq + theta3 * sigma_sq * 
-##             (a1 + a0)), rep(0, length(theta4)), (theta3 * theta2 + 
-##             (1/2) * theta3^2 * (a1 + a0))))
-##         Gamma_tnie &lt;- matrix(c(0, (theta2 + theta3 * a1), rep(0, 
-##             length(beta2)), 0, 0, beta1, (beta1 * a1), rep(0, 
-##             length(theta4)), 0))
-##         Gamma_tnde &lt;- matrix(c(theta3, (theta3 * a1), (theta3 * 
-##             c_cond), 0, 1, (theta3 * sigma_sq), (beta0 + beta1 * 
-##             a1 + beta2_c + theta2 * sigma_sq + theta3 * sigma_sq * 
-##             (a1 + a0)), rep(0, length(theta4)), (theta3 * theta2 + 
-##             (1/2) * theta3^2 * (a1 + a0))))
-##         Gamma_pnie &lt;- matrix(c(0, (theta2 + theta3 * a0), rep(0, 
-##             length(beta2)), 0, 0, beta1, (beta1 * a0), rep(0, 
-##             length(theta4)), 0))
+##         if (is.null(beta3)) {
+##             beta3_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(length(c_cond) == length(beta3))
+##             beta3_c &lt;- sum(t(matrix(beta3)) %*% matrix(c_cond))
+##         }
+##         if (is.null(theta4)) {
+##             assertthat::assert_that(is.null(c_cond))
+##             theta4_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(!is.null(c_cond))
+##             assertthat::assert_that(length(c_cond) == length(theta4))
+##             theta4_c &lt;- sum(t(matrix(theta4)) %*% matrix(c_cond))
+##         }
+##         if (is.null(theta5)) {
+##             theta5_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(length(c_cond) == length(theta5))
+##             theta5_c &lt;- sum(t(matrix(theta5)) %*% matrix(c_cond))
+##         }
+##         if (is.null(theta6)) {
+##             theta6_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(length(c_cond) == length(theta6))
+##             theta6_c &lt;- sum(t(matrix(theta6)) %*% matrix(c_cond))
+##         }
+##         if (is.null(theta5)) {
+##             pd_cde_theta5 &lt;- rep(0, length(theta5))
+##         }
+##         else {
+##             pd_cde_theta5 &lt;- c_cond
+##         }
+##         Gamma_cde &lt;- matrix(c(0, 0, rep(0, length(beta2)), rep(0, 
+##             length(beta3)), 0, 1, 0, m_cde, rep(0, length(theta4)), 
+##             pd_cde_theta5, rep(0, length(theta6)), 0))
+##         if (is.null(beta3)) {
+##             pd_pnde_beta3 &lt;- rep(0, length(beta3))
+##         }
+##         else {
+##             pd_pnde_beta3 &lt;- theta3 * a1 * c_cond
+##         }
+##         if (is.null(theta5)) {
+##             pd_pnde_theta5 &lt;- rep(0, length(theta5))
+##         }
+##         else {
+##             pd_pnde_theta5 &lt;- c_cond
+##         }
+##         if (is.null(theta6)) {
+##             pd_pnde_theta6 &lt;- rep(0, length(theta6))
+##         }
+##         else {
+##             pd_pnde_theta6 &lt;- theta3 * sigma_sq * c_cond
+##         }
+##         Gamma_pnde &lt;- matrix(c(theta3, theta3 * a0, theta3 * 
+##             c_cond, pd_pnde_beta3, 0, 1, theta3 * sigma_sq, a0 * 
+##             (beta1 + beta3_c) + beta0 + beta2_c + sigma_sq * 
+##             ((theta2 + theta6_c) + theta3 * (a0 + a1)), rep(0, 
+##             length(theta4)), pd_pnde_theta5, pd_pnde_theta6, 
+##             1/2 * theta3 * (2 * (theta2 + theta6_c) + theta3 * 
+##                 (a0 + a1))))
+##         if (is.null(beta3)) {
+##             pd_tnie_beta3 &lt;- rep(0, length(beta3))
+##         }
+##         else {
+##             pd_tnie_beta3 &lt;- c_cond * (theta2 + theta3 * a1 + 
+##                 theta6_c)
+##         }
+##         if (is.null(theta6)) {
+##             pd_tnie_theta6 &lt;- rep(0, length(theta6))
+##         }
+##         else {
+##             pd_tnie_theta6 &lt;- c_cond * (beta1 + beta3_c)
+##         }
+##         Gamma_tnie &lt;- matrix(c(0, theta2 + theta3 * a1 + theta6_c, 
+##             rep(0, length(beta2)), pd_tnie_beta3, 0, 0, beta1 + 
+##                 beta3_c, a1 * (beta1 + beta3_c), rep(0, length(theta4)), 
+##             rep(0, length(theta5)), pd_tnie_theta6, 0))
+##         if (is.null(beta3)) {
+##             pd_tnde_beta3 &lt;- rep(0, length(beta3))
+##         }
+##         else {
+##             pd_tnde_beta3 &lt;- theta3 * a1 * c_cond
+##         }
+##         if (is.null(theta5)) {
+##             pd_tnde_theta5 &lt;- rep(0, length(theta5))
+##         }
+##         else {
+##             pd_tnde_theta5 &lt;- c_cond
+##         }
+##         if (is.null(theta6)) {
+##             pd_tnde_theta6 &lt;- rep(0, length(theta6))
+##         }
+##         else {
+##             pd_tnde_theta6 &lt;- theta3 * sigma_sq * c_cond
+##         }
+##         Gamma_tnde &lt;- matrix(c(theta3, theta3 * a1, theta3 * 
+##             c_cond, pd_tnde_beta3, 0, 1, theta3 * sigma_sq, a1 * 
+##             (beta1 + beta3_c) + beta0 + beta2_c + sigma_sq * 
+##             ((theta2 + theta6_c) + theta3 * (a0 + a1)), rep(0, 
+##             length(theta4)), pd_tnde_theta5, pd_tnde_theta6, 
+##             1/2 * theta3 * (2 * (theta2 + theta6_c) + theta3 * 
+##                 (a0 + a1))))
+##         if (is.null(beta3)) {
+##             pd_pnie_beta3 &lt;- rep(0, length(beta3))
+##         }
+##         else {
+##             pd_pnie_beta3 &lt;- c_cond * (theta2 + theta3 * a0 + 
+##                 theta6_c)
+##         }
+##         if (is.null(theta6)) {
+##             pd_pnie_theta6 &lt;- rep(0, length(theta6))
+##         }
+##         else {
+##             pd_pnie_theta6 &lt;- c_cond * (beta1 + beta3_c)
+##         }
+##         Gamma_pnie &lt;- matrix(c(0, theta2 + theta3 * a0 + theta6_c, 
+##             rep(0, length(beta2)), pd_pnie_beta3, 0, 0, beta1 + 
+##                 beta3_c, a0 * (beta1 + beta3_c), rep(0, length(theta4)), 
+##             rep(0, length(theta5)), pd_pnie_theta6, 0))
 ##         Gamma_te &lt;- Gamma_pnde + Gamma_tnie
-##         pnde &lt;- (theta1 + (theta3 * beta0) + (theta3 * beta1 * 
-##             a0) + (theta3 * beta2_c) + (theta3 * theta2 * sigma_sq)) * 
-##             (a1 - a0) + ((1/2) * theta3^2 * sigma_sq) * (a1^2 - 
-##             a0^2)
-##         tnie &lt;- ((theta2 * beta1) + theta3 * beta1 * a1) * (a1 - 
-##             a0)
+##         pnde &lt;- ((theta1 + theta5_c + theta3 * (beta0 + beta1 * 
+##             a0 + beta2_c + beta3_c * a0) + 1/2 * sigma_sq * theta3 * 
+##             (2 * theta2 + theta3 * a1 + theta3 * a0 + 2 * theta6_c))) * 
+##             (a1 - a0)
+##         tnie &lt;- (theta2 + theta3 * a1 + theta6_c) * (beta1 + 
+##             beta3_c) * (a1 - a0)
 ##         d_pm &lt;- grad_prop_med_yreg_logistic(pnde = unname(pnde), 
 ##             tnie = unname(tnie))
 ##         Gamma_pm &lt;- d_pm[[&quot;pnde&quot;]] * Gamma_pnde + d_pm[[&quot;tnie&quot;]] * 
@@ -381,7 +834,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##     }
 ##     return(fun_se)
 ## }
-## &lt;bytecode: 0x7f9f13d39c80&gt;
+## &lt;bytecode: 0x7fa5ad28f638&gt;
 ## &lt;environment: namespace:regmedint&gt;</code></pre>
 </div>
 </div>
@@ -391,12 +844,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="point-estimates-2" class="section level2">
 <h2>Point estimates</h2>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>regmedint<span class="sc">:::</span>calc_myreg_mreg_logistic_yreg_linear_est</span></code></pre></div>
-<pre><code>## function (beta0, beta1, beta2, theta0, theta1, theta2, theta3, 
-##     theta4) 
+<pre><code>## function (beta0, beta1, beta2, beta3, theta0, theta1, theta2, 
+##     theta3, theta4, theta5, theta6) 
 ## {
 ##     validate_myreg_coefs(beta0 = beta0, beta1 = beta1, beta2 = beta2, 
-##         theta0 = theta0, theta1 = theta1, theta2 = theta2, theta3 = theta3, 
-##         theta4 = theta4)
+##         beta3 = beta3, theta0 = theta0, theta1 = theta1, theta2 = theta2, 
+##         theta3 = theta3, theta4 = theta4, theta5 = theta5, theta6 = theta6)
 ##     fun_est &lt;- function(a0, a1, m_cde, c_cond) {
 ##         if (is.null(beta2)) {
 ##             assertthat::assert_that(is.null(c_cond))
@@ -407,21 +860,50 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##             assertthat::assert_that(length(c_cond) == length(beta2))
 ##             beta2_c &lt;- sum(t(matrix(beta2)) %*% matrix(c_cond))
 ##         }
-##         cde &lt;- (theta1 + (theta3 * m_cde)) * (a1 - a0)
-##         pnde &lt;- (theta1 * (a1 - a0)) + (theta3 * (a1 - a0)) * 
-##             (exp(beta0 + (beta1 * a0) + beta2_c)/(1 + exp(beta0 + 
-##                 (beta1 * a0) + beta2_c)))
-##         tnie &lt;- (theta2 + (theta3 * a1)) * ((exp(beta0 + (beta1 * 
-##             a1) + beta2_c)/(1 + exp(beta0 + (beta1 * a1) + beta2_c))) - 
-##             (exp(beta0 + (beta1 * a0) + beta2_c)/(1 + exp(beta0 + 
-##                 (beta1 * a0) + beta2_c))))
-##         tnde &lt;- (theta1 * (a1 - a0)) + (theta3 * (a1 - a0)) * 
-##             (exp(beta0 + (beta1 * a1) + beta2_c)/(1 + exp(beta0 + 
-##                 (beta1 * a1) + beta2_c)))
-##         pnie &lt;- (theta2 + (theta3 * a0)) * ((exp(beta0 + (beta1 * 
-##             a1) + beta2_c)/(1 + exp(beta0 + (beta1 * a1) + beta2_c))) - 
-##             (exp(beta0 + (beta1 * a0) + beta2_c)/(1 + exp(beta0 + 
-##                 (beta1 * a0) + beta2_c))))
+##         if (is.null(beta3)) {
+##             beta3_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(length(c_cond) == length(beta3))
+##             beta3_c &lt;- sum(t(matrix(beta3)) %*% matrix(c_cond))
+##         }
+##         if (is.null(theta4)) {
+##             assertthat::assert_that(is.null(c_cond))
+##             theta4_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(!is.null(c_cond))
+##             assertthat::assert_that(length(c_cond) == length(theta4))
+##             theta4_c &lt;- sum(t(matrix(theta4)) %*% matrix(c_cond))
+##         }
+##         if (is.null(theta5)) {
+##             theta5_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(length(c_cond) == length(theta5))
+##             theta5_c &lt;- sum(t(matrix(theta5)) %*% matrix(c_cond))
+##         }
+##         if (is.null(theta6)) {
+##             theta6_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(length(c_cond) == length(theta6))
+##             theta6_c &lt;- sum(t(matrix(theta6)) %*% matrix(c_cond))
+##         }
+##         expit &lt;- function(x) {
+##             exp(x)/(1 + exp(x))
+##         }
+##         cde &lt;- (theta1 + theta3 * m_cde + theta5_c) * (a1 - a0)
+##         pnde &lt;- (theta1 + theta3 * expit(beta0 + beta1 * a0 + 
+##             beta2_c + beta3_c * a0) + theta5_c) * (a1 - a0)
+##         tnie &lt;- (theta2 + theta3 * a1 + theta6_c) * (expit(beta0 + 
+##             beta1 * a1 + beta2_c + beta3_c * a1) - expit(beta0 + 
+##             beta1 * a0 + beta2_c + beta3_c * a0))
+##         tnde &lt;- (theta1 + theta3 * expit(beta0 + beta1 * a1 + 
+##             beta2_c + beta3_c * a1) + theta5_c) * (a1 - a0)
+##         pnie &lt;- (theta2 + theta3 * a0 + theta6_c) * (expit(beta0 + 
+##             beta1 * a1 + beta2_c + beta3_c * a1) - expit(beta0 + 
+##             beta1 * a0 + beta2_c + beta3_c * a0))
 ##         te &lt;- pnde + tnie
 ##         pm &lt;- tnie/te
 ##         c(cde = unname(cde), pnde = unname(pnde), tnie = unname(tnie), 
@@ -430,21 +912,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##     }
 ##     return(fun_est)
 ## }
-## &lt;bytecode: 0x7f9f141c7b80&gt;
+## &lt;bytecode: 0x7fa5ace1e778&gt;
 ## &lt;environment: namespace:regmedint&gt;</code></pre>
 </div>
 <div id="standard-error-estimates-2" class="section level2">
 <h2>Standard error estimates</h2>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>regmedint<span class="sc">:::</span>calc_myreg_mreg_logistic_yreg_linear_se</span></code></pre></div>
-<pre><code>## function (beta0, beta1, beta2, theta0, theta1, theta2, theta3, 
-##     theta4, Sigma_beta, Sigma_theta) 
+<pre><code>## function (beta0, beta1, beta2, beta3, theta0, theta1, theta2, 
+##     theta3, theta4, theta5, theta6, Sigma_beta, Sigma_theta) 
 ## {
 ##     validate_myreg_coefs(beta0 = beta0, beta1 = beta1, beta2 = beta2, 
-##         theta0 = theta0, theta1 = theta1, theta2 = theta2, theta3 = theta3, 
-##         theta4 = theta4)
+##         beta3 = beta3, theta0 = theta0, theta1 = theta1, theta2 = theta2, 
+##         theta3 = theta3, theta4 = theta4, theta5 = theta5, theta6 = theta6)
 ##     validate_myreg_vcovs(beta0 = beta0, beta1 = beta1, beta2 = beta2, 
-##         theta0 = theta0, theta1 = theta1, theta2 = theta2, theta3 = theta3, 
-##         theta4 = theta4, Sigma_beta = Sigma_beta, Sigma_theta = Sigma_theta)
+##         beta3 = beta3, theta0 = theta0, theta1 = theta1, theta2 = theta2, 
+##         theta3 = theta3, theta4 = theta4, theta5 = theta5, theta6 = theta6, 
+##         Sigma_beta = Sigma_beta, Sigma_theta = Sigma_theta)
 ##     Sigma &lt;- Matrix::bdiag(Sigma_beta, Sigma_theta)
 ##     fun_se &lt;- function(a0, a1, m_cde, c_cond) {
 ##         if (is.null(beta2)) {
@@ -456,80 +939,186 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##             assertthat::assert_that(length(c_cond) == length(beta2))
 ##             beta2_c &lt;- sum(t(matrix(beta2)) %*% matrix(c_cond))
 ##         }
-##         Gamma_cde &lt;- matrix(c(0, 0, rep(0, length(beta2)), 0, 
-##             1, 0, m_cde, rep(0, length(theta4))))
-##         pnde_d1 &lt;- theta3 * (exp(beta0 + (beta1 * a0) + beta2_c)/(1 + 
-##             exp(beta0 + (beta1 * a0) + beta2_c))^2)
-##         pnde_d2 &lt;- a0 * pnde_d1
-##         pnde_d3 &lt;- c_cond * pnde_d1
-##         pnde_d4 &lt;- 0
-##         pnde_d5 &lt;- 1
-##         pnde_d6 &lt;- 0
-##         pnde_d7 &lt;- exp(beta0 + (beta1 * a0) + beta2_c)/(1 + exp(beta0 + 
-##             (beta1 * a0) + beta2_c))
-##         pnde_d8 &lt;- rep(0, length(theta4))
+##         if (is.null(beta3)) {
+##             beta3_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(length(c_cond) == length(beta3))
+##             beta3_c &lt;- sum(t(matrix(beta3)) %*% matrix(c_cond))
+##         }
+##         if (is.null(theta4)) {
+##             assertthat::assert_that(is.null(c_cond))
+##             theta4_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(!is.null(c_cond))
+##             assertthat::assert_that(length(c_cond) == length(theta4))
+##             theta4_c &lt;- sum(t(matrix(theta4)) %*% matrix(c_cond))
+##         }
+##         if (is.null(theta5)) {
+##             theta5_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(length(c_cond) == length(theta5))
+##             theta5_c &lt;- sum(t(matrix(theta5)) %*% matrix(c_cond))
+##         }
+##         if (is.null(theta6)) {
+##             theta6_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(length(c_cond) == length(theta6))
+##             theta6_c &lt;- sum(t(matrix(theta6)) %*% matrix(c_cond))
+##         }
+##         expit &lt;- function(x) {
+##             exp(x)/(1 + exp(x))
+##         }
+##         if (is.null(theta5)) {
+##             pd_cde_theta5 &lt;- rep(0, length(theta5))
+##         }
+##         else {
+##             pd_cde_theta5 &lt;- c_cond
+##         }
+##         Gamma_cde &lt;- matrix(c(0, 0, rep(0, length(beta2)), rep(0, 
+##             length(beta3)), 0, 1, 0, m_cde, rep(0, length(theta4)), 
+##             pd_cde_theta5, rep(0, length(theta6))))
+##         .e3 &lt;- a0 * (beta1 + beta3_c) + beta0 + beta2_c
+##         .e4 &lt;- exp(.e3)
+##         .e5 &lt;- 1 + .e4
+##         .e6 &lt;- 1 - .e4/.e5
+##         pnde_d1 &lt;- theta3 * .e6 * .e4/.e5
+##         pnde_d2 &lt;- a0 * theta3 * .e6 * .e4/.e5
+##         pnde_d3 &lt;- c_cond * theta3 * .e6 * .e4/.e5
+##         if (is.null(beta3)) {
+##             pnde_d4 &lt;- rep(0, length(beta3))
+##         }
+##         else {
+##             pnde_d4 &lt;- a0 * c_cond * theta3 * .e6 * .e4/.e5
+##         }
+##         pnde_d5 &lt;- 0
+##         pnde_d6 &lt;- 1
+##         pnde_d7 &lt;- 0
+##         pnde_d8 &lt;- expit(.e3)
+##         pnde_d9 &lt;- rep(0, length(theta4))
+##         if (is.null(theta5)) {
+##             pnde_d10 &lt;- rep(0, length(theta5))
+##         }
+##         else {
+##             pnde_d10 &lt;- c_cond
+##         }
+##         pnde_d11 &lt;- rep(0, length(theta6))
 ##         Gamma_pnde &lt;- matrix(c(pnde_d1, pnde_d2, pnde_d3, pnde_d4, 
-##             pnde_d5, pnde_d6, pnde_d7, pnde_d8))
-##         tnie_Q &lt;- exp(beta0 + (beta1 * a1) + beta2_c)/(1 + exp(beta0 + 
-##             (beta1 * a1) + beta2_c))^2
-##         tnie_B &lt;- exp(beta0 + (beta1 * a0) + beta2_c)/(1 + exp(beta0 + 
-##             (beta1 * a0) + beta2_c))^2
-##         tnie_K &lt;- exp(beta0 + (beta1 * a1) + beta2_c)/(1 + exp(beta0 + 
-##             (beta1 * a1) + beta2_c))
-##         tnie_D &lt;- exp(beta0 + (beta1 * a0) + beta2_c)/(1 + exp(beta0 + 
-##             (beta1 * a0) + beta2_c))
-##         tnie_d1 &lt;- (theta2 + (theta3 * a1)) * (tnie_Q - tnie_B)
-##         tnie_d2 &lt;- (theta2 + (theta3 * a1)) * ((a1 * tnie_Q) - 
-##             (a0 * tnie_B))
-##         tnie_d3 &lt;- (theta2 + (theta3 * a1)) * c_cond * (tnie_Q - 
-##             tnie_B)
-##         tnie_d4 &lt;- 0
+##             pnde_d5, pnde_d6, pnde_d7, pnde_d8, pnde_d9, pnde_d10, 
+##             pnde_d11))
+##         .e1 &lt;- beta1 + beta3_c
+##         .e2 &lt;- beta2_c
+##         .e5 &lt;- a0 * .e1 + beta0 + .e2
+##         .e8 &lt;- a1 * .e1 + beta0 + .e2
+##         .e9 &lt;- exp(.e5)
+##         .e10 &lt;- exp(.e8)
+##         .e11 &lt;- 1 + .e9
+##         .e12 &lt;- 1 + .e10
+##         .e13 &lt;- 1 - .e9/.e11
+##         .e14 &lt;- 1 - .e10/.e12
+##         .e17 &lt;- a1 * theta3 + theta6_c + theta2
+##         .e20 &lt;- expit(.e8) - expit(.e5)
+##         .e25 &lt;- .e14 * .e10/.e12 - .e13 * .e9/.e11
+##         .e32 &lt;- a1 * .e14 * .e10/.e12 - a0 * .e13 * .e9/.e11
+##         tnie_d1 &lt;- .e25 * .e17
+##         tnie_d2 &lt;- .e32 * .e17
+##         tnie_d3 &lt;- c_cond * .e25 * .e17
+##         if (is.null(beta3)) {
+##             tnie_d4 &lt;- rep(0, length(beta3))
+##         }
+##         else {
+##             tnie_d4 &lt;- c_cond * .e32 * .e17
+##         }
 ##         tnie_d5 &lt;- 0
-##         tnie_d6 &lt;- tnie_K - tnie_D
-##         tnie_d7 &lt;- a1 * (tnie_K - tnie_D)
-##         tnie_d8 &lt;- rep(0, length(theta4))
+##         tnie_d6 &lt;- 0
+##         tnie_d7 &lt;- .e20
+##         tnie_d8 &lt;- a1 * .e20
+##         tnie_d9 &lt;- rep(0, length(theta4))
+##         tnie_d10 &lt;- rep(0, length(theta5))
+##         if (is.null(theta6)) {
+##             tnie_d11 &lt;- rep(0, length(theta6))
+##         }
+##         else {
+##             tnie_d11 &lt;- c_cond * .e20
+##         }
 ##         Gamma_tnie &lt;- matrix(c(tnie_d1, tnie_d2, tnie_d3, tnie_d4, 
-##             tnie_d5, tnie_d6, tnie_d7, tnie_d8))
-##         tnde_d1 &lt;- theta3 * (exp(beta0 + (beta1 * a1) + beta2_c)/(1 + 
-##             exp(beta0 + (beta1 * a1) + beta2_c))^2)
-##         tnde_d2 &lt;- a1 * tnde_d1
-##         tnde_d3 &lt;- c_cond * tnde_d1
-##         tnde_d4 &lt;- 0
-##         tnde_d5 &lt;- 1
-##         tnde_d6 &lt;- 0
-##         tnde_d7 &lt;- exp(beta0 + (beta1 * a1) + beta2_c)/(1 + exp(beta0 + 
-##             (beta1 * a1) + beta2_c))
-##         tnde_d8 &lt;- rep(0, length(theta4))
+##             tnie_d5, tnie_d6, tnie_d7, tnie_d8, tnie_d9, tnie_d10, 
+##             tnie_d11))
+##         .e3 &lt;- a1 * (beta1 + beta3_c) + beta0 + beta2_c
+##         .e4 &lt;- exp(.e3)
+##         .e5 &lt;- 1 + .e4
+##         .e6 &lt;- 1 - .e4/.e5
+##         tnde_d1 &lt;- theta3 * .e6 * .e4/.e5
+##         tnde_d2 &lt;- a1 * theta3 * .e6 * .e4/.e5
+##         tnde_d3 &lt;- c_cond * theta3 * .e6 * .e4/.e5
+##         if (is.null(beta3)) {
+##             tnde_d4 &lt;- rep(0, length(beta3))
+##         }
+##         else {
+##             tnde_d4 &lt;- a1 * c_cond * theta3 * .e6 * .e4/.e5
+##         }
+##         tnde_d5 &lt;- 0
+##         tnde_d6 &lt;- 1
+##         tnde_d7 &lt;- 0
+##         tnde_d8 &lt;- expit(.e3)
+##         tnde_d9 &lt;- rep(0, length(theta4))
+##         if (is.null(theta5)) {
+##             tnde_d10 &lt;- rep(0, length(theta5))
+##         }
+##         else {
+##             tnde_d10 &lt;- c_cond
+##         }
+##         tnde_d11 &lt;- rep(0, length(theta6))
 ##         Gamma_tnde &lt;- matrix(c(tnde_d1, tnde_d2, tnde_d3, tnde_d4, 
-##             tnde_d5, tnde_d6, tnde_d7, tnde_d8))
-##         pnie_Q &lt;- exp(beta0 + (beta1 * a1) + beta2_c)/(1 + exp(beta0 + 
-##             (beta1 * a1) + beta2_c))^2
-##         pnie_B &lt;- exp(beta0 + (beta1 * a0) + beta2_c)/(1 + exp(beta0 + 
-##             (beta1 * a0) + beta2_c))^2
-##         pnie_K &lt;- exp(beta0 + (beta1 * a1) + beta2_c)/(1 + exp(beta0 + 
-##             (beta1 * a1) + beta2_c))
-##         pnie_D &lt;- exp(beta0 + (beta1 * a0) + beta2_c)/(1 + exp(beta0 + 
-##             (beta1 * a0) + beta2_c))
-##         pnie_d1 &lt;- (theta2 + (theta3 * a0)) * (pnie_Q - pnie_B)
-##         pnie_d2 &lt;- (theta2 + (theta3 * a0)) * ((a1 * pnie_Q) - 
-##             (a0 * pnie_B))
-##         pnie_d3 &lt;- (theta2 + (theta3 * a0)) * c_cond * (pnie_Q - 
-##             pnie_B)
-##         pnie_d4 &lt;- 0
+##             tnde_d5, tnde_d6, tnde_d7, tnde_d8, tnde_d9, tnde_d10, 
+##             tnde_d11))
+##         .e1 &lt;- beta1 + beta3_c
+##         .e2 &lt;- beta2_c
+##         .e5 &lt;- a0 * .e1 + beta0 + .e2
+##         .e8 &lt;- a1 * .e1 + beta0 + .e2
+##         .e9 &lt;- exp(.e5)
+##         .e10 &lt;- exp(.e8)
+##         .e11 &lt;- 1 + .e9
+##         .e12 &lt;- 1 + .e10
+##         .e13 &lt;- 1 - .e9/.e11
+##         .e14 &lt;- 1 - .e10/.e12
+##         .e17 &lt;- a0 * theta3 + theta6_c + theta2
+##         .e20 &lt;- expit(.e8) - expit(.e5)
+##         .e25 &lt;- .e14 * .e10/.e12 - .e13 * .e9/.e11
+##         .e32 &lt;- a1 * .e14 * .e10/.e12 - a0 * .e13 * .e9/.e11
+##         pnie_d1 &lt;- .e25 * .e17
+##         pnie_d2 &lt;- .e32 * .e17
+##         pnie_d3 &lt;- c_cond * .e25 * .e17
+##         if (is.null(beta3)) {
+##             pnie_d4 &lt;- rep(0, length(beta3))
+##         }
+##         else {
+##             pnie_d4 &lt;- c_cond * .e32 * .e17
+##         }
 ##         pnie_d5 &lt;- 0
-##         pnie_d6 &lt;- pnie_K - pnie_D
-##         pnie_d7 &lt;- a0 * (pnie_K - pnie_D)
-##         pnie_d8 &lt;- rep(0, length(theta4))
+##         pnie_d6 &lt;- 0
+##         pnie_d7 &lt;- .e20
+##         pnie_d8 &lt;- a0 * .e20
+##         pnie_d9 &lt;- rep(0, length(theta4))
+##         pnie_d10 &lt;- rep(0, length(theta5))
+##         if (is.null(theta6)) {
+##             pnie_d11 &lt;- rep(0, length(theta6))
+##         }
+##         else {
+##             pnie_d11 &lt;- c_cond * .e20
+##         }
 ##         Gamma_pnie &lt;- matrix(c(pnie_d1, pnie_d2, pnie_d3, pnie_d4, 
-##             pnie_d5, pnie_d6, pnie_d7, pnie_d8))
+##             pnie_d5, pnie_d6, pnie_d7, pnie_d8, pnie_d9, pnie_d10, 
+##             pnie_d11))
 ##         Gamma_te &lt;- ((a1 - a0) * Gamma_pnde) + Gamma_tnie
-##         pnde &lt;- (theta1 * (a1 - a0)) + (theta3 * (a1 - a0)) * 
-##             (exp(beta0 + (beta1 * a0) + beta2_c)/(1 + exp(beta0 + 
-##                 (beta1 * a0) + beta2_c)))
-##         tnie &lt;- (theta2 + (theta3 * a1)) * ((exp(beta0 + (beta1 * 
-##             a1) + beta2_c)/(1 + exp(beta0 + (beta1 * a1) + beta2_c))) - 
-##             (exp(beta0 + (beta1 * a0) + beta2_c)/(1 + exp(beta0 + 
-##                 (beta1 * a0) + beta2_c))))
+##         pnde &lt;- (theta1 + theta3 * expit(beta0 + beta1 * a0 + 
+##             beta2_c + beta3_c * a0) + theta5_c) * (a1 - a0)
+##         tnie &lt;- (theta2 + theta3 * a1 + theta6_c) * (expit(beta0 + 
+##             beta1 * a1 + beta2_c + beta3_c * a1) - expit(beta0 + 
+##             beta1 * a0 + beta2_c + beta3_c * a0))
 ##         d_pm &lt;- grad_prop_med_yreg_linear(pnde = unname(pnde), 
 ##             tnie = unname(tnie))
 ##         Gamma_pm &lt;- (d_pm[[&quot;pnde&quot;]] * (a1 - a0) * Gamma_pnde) + 
@@ -554,7 +1143,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##     }
 ##     return(fun_se)
 ## }
-## &lt;bytecode: 0x7f9f14616448&gt;
+## &lt;bytecode: 0x7fa5ae849eb0&gt;
 ## &lt;environment: namespace:regmedint&gt;</code></pre>
 </div>
 </div>
@@ -564,12 +1153,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="point-estimates-3" class="section level2">
 <h2>Point estimates</h2>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>regmedint<span class="sc">:::</span>calc_myreg_mreg_logistic_yreg_logistic_est</span></code></pre></div>
-<pre><code>## function (beta0, beta1, beta2, theta0, theta1, theta2, theta3, 
-##     theta4) 
+<pre><code>## function (beta0, beta1, beta2, beta3, theta0, theta1, theta2, 
+##     theta3, theta4, theta5, theta6) 
 ## {
 ##     validate_myreg_coefs(beta0 = beta0, beta1 = beta1, beta2 = beta2, 
-##         theta0 = theta0, theta1 = theta1, theta2 = theta2, theta3 = theta3, 
-##         theta4 = theta4)
+##         beta3 = beta3, theta0 = theta0, theta1 = theta1, theta2 = theta2, 
+##         theta3 = theta3, theta4 = theta4, theta5 = theta5, theta6 = theta6)
 ##     fun_est &lt;- function(a0, a1, m_cde, c_cond) {
 ##         if (is.null(beta2)) {
 ##             assertthat::assert_that(is.null(c_cond))
@@ -580,25 +1169,60 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##             assertthat::assert_that(length(c_cond) == length(beta2))
 ##             beta2_c &lt;- sum(t(matrix(beta2)) %*% matrix(c_cond))
 ##         }
-##         cde &lt;- (theta1 + (theta3 * m_cde)) * (a1 - a0)
-##         pnde &lt;- (theta1 * (a1 - a0)) + log(1 + exp(theta2 + (theta3 * 
-##             a1) + beta0 + (beta1 * a0) + beta2_c)) - log(1 + 
-##             exp(theta2 + (theta3 * a0) + beta0 + (beta1 * a0) + 
-##                 beta2_c))
-##         tnie &lt;- log(1 + exp(beta0 + (beta1 * a0) + beta2_c)) - 
-##             log(1 + exp(beta0 + (beta1 * a1) + beta2_c)) + log(1 + 
-##             exp(theta2 + (theta3 * a1) + beta0 + (beta1 * a1) + 
-##                 beta2_c)) - log(1 + exp(theta2 + (theta3 * a1) + 
-##             beta0 + (beta1 * a0) + beta2_c))
-##         tnde &lt;- (theta1 * (a1 - a0)) + log(1 + exp(theta2 + (theta3 * 
-##             a1) + beta0 + (beta1 * a1) + beta2_c)) - log(1 + 
-##             exp(theta2 + (theta3 * a0) + beta0 + (beta1 * a1) + 
-##                 beta2_c))
-##         pnie &lt;- log(1 + exp(beta0 + (beta1 * a0) + beta2_c)) - 
-##             log(1 + exp(beta0 + (beta1 * a1) + beta2_c)) + log(1 + 
-##             exp(theta2 + (theta3 * a0) + beta0 + (beta1 * a1) + 
-##                 beta2_c)) - log(1 + exp(theta2 + (theta3 * a0) + 
-##             beta0 + (beta1 * a0) + beta2_c))
+##         if (is.null(beta3)) {
+##             beta3_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(length(c_cond) == length(beta3))
+##             beta3_c &lt;- sum(t(matrix(beta3)) %*% matrix(c_cond))
+##         }
+##         if (is.null(theta4)) {
+##             assertthat::assert_that(is.null(c_cond))
+##             theta4_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(!is.null(c_cond))
+##             assertthat::assert_that(length(c_cond) == length(theta4))
+##             theta4_c &lt;- sum(t(matrix(theta4)) %*% matrix(c_cond))
+##         }
+##         if (is.null(theta5)) {
+##             theta5_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(length(c_cond) == length(theta5))
+##             theta5_c &lt;- sum(t(matrix(theta5)) %*% matrix(c_cond))
+##         }
+##         if (is.null(theta6)) {
+##             theta6_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(length(c_cond) == length(theta6))
+##             theta6_c &lt;- sum(t(matrix(theta6)) %*% matrix(c_cond))
+##         }
+##         expit &lt;- function(x) {
+##             exp(x)/(1 + exp(x))
+##         }
+##         cde &lt;- (theta1 + theta3 * m_cde + theta5_c) * (a1 - a0)
+##         pnde &lt;- ((theta1 + theta5_c) * (a1 - a0)) + log(1 + exp(beta0 + 
+##             beta1 * a0 + beta2_c + beta3_c * a0 + theta2 + theta3 * 
+##             a1 + theta6_c)) - log(1 + exp(beta0 + beta1 * a0 + 
+##             beta2_c + beta3_c * a0 + theta2 + theta3 * a0 + theta6_c))
+##         tnie &lt;- log(1 + exp(beta0 + beta1 * a1 + beta2_c + beta3_c * 
+##             a1 + theta2 + theta3 * a1 + theta6_c)) - log(1 + 
+##             exp(beta0 + beta1 * a0 + beta2_c + beta3_c * a0 + 
+##                 theta2 + theta3 * a1 + theta6_c)) + log(1 + exp(beta0 + 
+##             beta1 * a0 + beta2_c + beta3_c * a0)) - log(1 + exp(beta0 + 
+##             beta1 * a1 + beta2_c + beta3_c * a1))
+##         tnde &lt;- ((theta1 + theta5_c) * (a1 - a0)) + log(1 + exp(beta0 + 
+##             beta1 * a1 + beta2_c + beta3_c * a1 + theta2 + theta3 * 
+##             a1 + theta6_c)) - log(1 + exp(beta0 + beta1 * a1 + 
+##             beta2_c + beta3_c * a1 + theta2 + theta3 * a0 + theta6_c))
+##         pnie &lt;- log(1 + exp(beta0 + beta1 * a1 + beta2_c + beta3_c * 
+##             a1 + theta2 + theta3 * a0 + theta6_c)) - log(1 + 
+##             exp(beta0 + beta1 * a0 + beta2_c + beta3_c * a0 + 
+##                 theta2 + theta3 * a0 + theta6_c)) + log(1 + exp(beta0 + 
+##             beta1 * a0 + beta2_c + beta3_c * a0)) - log(1 + exp(beta0 + 
+##             beta1 * a1 + beta2_c + beta3_c * a1))
 ##         te &lt;- pnde + tnie
 ##         pm &lt;- (exp(pnde) * (exp(tnie) - 1))/(exp(te) - 1)
 ##         c(cde = unname(cde), pnde = unname(pnde), tnie = unname(tnie), 
@@ -607,21 +1231,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##     }
 ##     return(fun_est)
 ## }
-## &lt;bytecode: 0x7f9f15043700&gt;
+## &lt;bytecode: 0x7fa5ac9fd8f8&gt;
 ## &lt;environment: namespace:regmedint&gt;</code></pre>
 </div>
 <div id="standard-error-estimates-3" class="section level2">
 <h2>Standard error estimates</h2>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>regmedint<span class="sc">:::</span>calc_myreg_mreg_logistic_yreg_logistic_se</span></code></pre></div>
-<pre><code>## function (beta0, beta1, beta2, theta0, theta1, theta2, theta3, 
-##     theta4, Sigma_beta, Sigma_theta) 
+<pre><code>## function (beta0, beta1, beta2, beta3, theta0, theta1, theta2, 
+##     theta3, theta4, theta5, theta6, Sigma_beta, Sigma_theta) 
 ## {
 ##     validate_myreg_coefs(beta0 = beta0, beta1 = beta1, beta2 = beta2, 
-##         theta0 = theta0, theta1 = theta1, theta2 = theta2, theta3 = theta3, 
-##         theta4 = theta4)
+##         beta3 = beta3, theta0 = theta0, theta1 = theta1, theta2 = theta2, 
+##         theta3 = theta3, theta4 = theta4, theta5 = theta5, theta6 = theta6)
 ##     validate_myreg_vcovs(beta0 = beta0, beta1 = beta1, beta2 = beta2, 
-##         theta0 = theta0, theta1 = theta1, theta2 = theta2, theta3 = theta3, 
-##         theta4 = theta4, Sigma_beta = Sigma_beta, Sigma_theta = Sigma_theta)
+##         beta3 = beta3, theta0 = theta0, theta1 = theta1, theta2 = theta2, 
+##         theta3 = theta3, theta4 = theta4, theta5 = theta5, theta6 = theta6, 
+##         Sigma_beta = Sigma_beta, Sigma_theta = Sigma_theta)
 ##     Sigma &lt;- Matrix::bdiag(Sigma_beta, Sigma_theta)
 ##     fun_se &lt;- function(a0, a1, m_cde, c_cond) {
 ##         if (is.null(beta2)) {
@@ -633,92 +1258,193 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##             assertthat::assert_that(length(c_cond) == length(beta2))
 ##             beta2_c &lt;- sum(t(matrix(beta2)) %*% matrix(c_cond))
 ##         }
-##         Gamma_cde &lt;- matrix(c(0, 0, rep(0, length(beta2)), 0, 
-##             (a1 - a0), 0, (a1 - a0) * m_cde, rep(0, length(theta4))))
-##         pnde_Q &lt;- exp(theta2 + (theta3 * a1) + beta0 + (beta1 * 
-##             a0) + beta2_c)/(1 + exp(theta2 + (theta3 * a1) + 
-##             beta0 + (beta1 * a0) + beta2_c))
-##         pnde_B &lt;- exp(theta2 + (theta3 * a0) + beta0 + (beta1 * 
-##             a0) + beta2_c)/(1 + exp(theta2 + (theta3 * a0) + 
-##             beta0 + (beta1 * a0) + beta2_c))
-##         pnde_d1 &lt;- pnde_Q - pnde_B
+##         if (is.null(beta3)) {
+##             beta3_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(length(c_cond) == length(beta3))
+##             beta3_c &lt;- sum(t(matrix(beta3)) %*% matrix(c_cond))
+##         }
+##         if (is.null(theta4)) {
+##             assertthat::assert_that(is.null(c_cond))
+##             theta4_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(!is.null(c_cond))
+##             assertthat::assert_that(length(c_cond) == length(theta4))
+##             theta4_c &lt;- sum(t(matrix(theta4)) %*% matrix(c_cond))
+##         }
+##         if (is.null(theta5)) {
+##             theta5_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(length(c_cond) == length(theta5))
+##             theta5_c &lt;- sum(t(matrix(theta5)) %*% matrix(c_cond))
+##         }
+##         if (is.null(theta6)) {
+##             theta6_c &lt;- 0
+##         }
+##         else {
+##             assertthat::assert_that(length(c_cond) == length(theta6))
+##             theta6_c &lt;- sum(t(matrix(theta6)) %*% matrix(c_cond))
+##         }
+##         expit &lt;- function(x) {
+##             exp(x)/(1 + exp(x))
+##         }
+##         if (is.null(theta5)) {
+##             pd_cde_theta5 &lt;- rep(0, length(theta5))
+##         }
+##         else {
+##             pd_cde_theta5 &lt;- c_cond
+##         }
+##         Gamma_cde &lt;- matrix(c(0, 0, rep(0, length(beta2)), rep(0, 
+##             length(beta3)), 0, (a1 - a0), 0, (a1 - a0) * m_cde, 
+##             rep(0, length(theta4)), pd_cde_theta5, rep(0, length(theta6))))
+##         pnde_expit_a1 &lt;- expit(a0 * (beta1 + beta3_c) + a1 * 
+##             theta3 + beta0 + beta2_c + theta6_c + theta2)
+##         pnde_expit_a0 &lt;- expit(a0 * (beta1 + beta3_c) + a0 * 
+##             theta3 + beta0 + beta2_c + theta6_c + theta2)
+##         pnde_d1 &lt;- pnde_expit_a1 - pnde_expit_a0
 ##         pnde_d2 &lt;- a0 * pnde_d1
 ##         pnde_d3 &lt;- c_cond * pnde_d1
-##         pnde_d4 &lt;- 0
-##         pnde_d5 &lt;- (a1 - a0)
-##         pnde_d6 &lt;- pnde_Q - pnde_B
-##         pnde_d7 &lt;- (a1 * pnde_Q) - (a0 * pnde_B)
-##         pnde_d8 &lt;- rep(0, length(theta4))
+##         if (is.null(beta3)) {
+##             pnde_d4 &lt;- rep(0, length(beta3))
+##         }
+##         else {
+##             pnde_d4 &lt;- c_cond * a0 * pnde_d1
+##         }
+##         pnde_d5 &lt;- 0
+##         pnde_d6 &lt;- a1 - a0
+##         pnde_d7 &lt;- pnde_d1
+##         pnde_d8 &lt;- a1 * pnde_expit_a1 - a0 * pnde_expit_a0
+##         pnde_d9 &lt;- rep(0, length(theta4))
+##         if (is.null(theta5)) {
+##             pnde_d10 &lt;- rep(0, length(theta5))
+##         }
+##         else {
+##             pnde_d10 &lt;- c_cond * (a1 - a0)
+##         }
+##         if (is.null(theta6)) {
+##             pnde_d11 &lt;- rep(0, length(theta6))
+##         }
+##         else {
+##             pnde_d11 &lt;- c_cond * pnde_d1
+##         }
 ##         Gamma_pnde &lt;- matrix(c(pnde_d1, pnde_d2, pnde_d3, pnde_d4, 
-##             pnde_d5, pnde_d6, pnde_d7, pnde_d8))
-##         tnie_Q &lt;- exp(theta2 + (theta3 * a1) + beta0 + (beta1 * 
-##             a1) + beta2_c)/(1 + exp(theta2 + (theta3 * a1) + 
-##             beta0 + (beta1 * a1) + beta2_c))
-##         tnie_B &lt;- exp(theta2 + (theta3 * a1) + beta0 + (beta1 * 
-##             a0) + beta2_c)/(1 + exp(theta2 + (theta3 * a1) + 
-##             beta0 + (beta1 * a0) + beta2_c))
-##         tnie_K &lt;- exp(beta0 + (beta1 * a1) + beta2_c)/(1 + exp(beta0 + 
-##             (beta1 * a1) + beta2_c))
-##         tnie_D &lt;- exp(beta0 + (beta1 * a0) + beta2_c)/(1 + exp(beta0 + 
-##             (beta1 * a0) + beta2_c))
-##         tnie_d1 &lt;- (tnie_D + tnie_Q) - (tnie_K + tnie_B)
-##         tnie_d2 &lt;- (a0 * (tnie_D - tnie_B)) + (a1 * (tnie_Q - 
-##             tnie_K))
-##         tnie_d3 &lt;- c_cond * ((tnie_D + tnie_Q) - (tnie_K + tnie_B))
-##         tnie_d4 &lt;- 0
+##             pnde_d5, pnde_d6, pnde_d7, pnde_d8, pnde_d9, pnde_d10, 
+##             pnde_d11))
+##         tnie_expit_q1 &lt;- expit(a0 * (beta1 + beta3_c) + beta0 + 
+##             beta2_c)
+##         tnie_expit_q2 &lt;- expit(a0 * (beta1 + beta3_c) + a1 * 
+##             theta3 + beta0 + beta2_c + theta6_c + theta2)
+##         tnie_expit_q3 &lt;- expit(a1 * (beta1 + beta3_c) + beta0 + 
+##             beta2_c)
+##         tnie_expit_q4 &lt;- expit(a1 * (beta1 + beta3_c) + a1 * 
+##             theta3 + beta0 + beta2_c + theta6_c + theta2)
+##         tnie_d1 &lt;- tnie_expit_q1 - tnie_expit_q2 - tnie_expit_q3 + 
+##             tnie_expit_q4
+##         tnie_d2 &lt;- a0 * (tnie_expit_q1 - tnie_expit_q2) + a1 * 
+##             (-tnie_expit_q3 + tnie_expit_q4)
+##         tnie_d3 &lt;- c_cond * tnie_d1
+##         if (is.null(beta3)) {
+##             tnie_d4 &lt;- rep(0, length(beta3))
+##         }
+##         else {
+##             tnie_d4 &lt;- c_cond * tnie_d2
+##         }
 ##         tnie_d5 &lt;- 0
-##         tnie_d6 &lt;- tnie_Q - tnie_B
-##         tnie_d7 &lt;- a1 * (tnie_Q - tnie_B)
-##         tnie_d8 &lt;- rep(0, length(theta4))
+##         tnie_d6 &lt;- 0
+##         tnie_d7 &lt;- tnie_expit_q4 - tnie_expit_q2
+##         tnie_d8 &lt;- a1 * tnie_d7
+##         tnie_d9 &lt;- rep(0, length(theta4))
+##         tnie_d10 &lt;- rep(0, length(theta5))
+##         if (is.null(theta6)) {
+##             tnie_d11 &lt;- rep(0, length(theta6))
+##         }
+##         else {
+##             tnie_d11 &lt;- c_cond * tnie_d7
+##         }
 ##         Gamma_tnie &lt;- matrix(c(tnie_d1, tnie_d2, tnie_d3, tnie_d4, 
-##             tnie_d5, tnie_d6, tnie_d7, tnie_d8))
-##         tnde_Q &lt;- exp(theta2 + (theta3 * a1) + beta0 + (beta1 * 
-##             a1) + beta2_c)/(1 + exp(theta2 + (theta3 * a1) + 
-##             beta0 + (beta1 * a1) + beta2_c))
-##         tnde_B &lt;- exp(theta2 + (theta3 * a0) + beta0 + (beta1 * 
-##             a1) + beta2_c)/(1 + exp(theta2 + (theta3 * a0) + 
-##             beta0 + (beta1 * a1) + beta2_c))
-##         tnde_d1 &lt;- tnde_Q - tnde_B
+##             tnie_d5, tnie_d6, tnie_d7, tnie_d8, tnie_d9, tnie_d10, 
+##             tnie_d11))
+##         tnde_expit_a1 &lt;- expit(a1 * (beta1 + beta3_c) + a1 * 
+##             theta3 + beta0 + beta2_c + theta6_c + theta2)
+##         tnde_expit_a0 &lt;- expit(a1 * (beta1 + beta3_c) + a0 * 
+##             theta3 + beta0 + beta2_c + theta6_c + theta2)
+##         tnde_d1 &lt;- tnde_expit_a1 - tnde_expit_a0
 ##         tnde_d2 &lt;- a1 * tnde_d1
 ##         tnde_d3 &lt;- c_cond * tnde_d1
-##         tnde_d4 &lt;- 0
-##         tnde_d5 &lt;- (a1 - a0)
-##         tnde_d6 &lt;- tnde_Q - tnde_B
-##         tnde_d7 &lt;- (a1 * tnde_Q) - (a0 * tnde_B)
-##         tnde_d8 &lt;- rep(0, length(theta4))
+##         if (is.null(beta3)) {
+##             tnde_d4 &lt;- rep(0, length(beta3))
+##         }
+##         else {
+##             tnde_d4 &lt;- c_cond * a1 * tnde_d1
+##         }
+##         tnde_d5 &lt;- 0
+##         tnde_d6 &lt;- a1 - a0
+##         tnde_d7 &lt;- tnde_d1
+##         tnde_d8 &lt;- a1 * tnde_expit_a1 - a0 * tnde_expit_a0
+##         tnde_d9 &lt;- rep(0, length(theta4))
+##         if (is.null(theta5)) {
+##             tnde_d10 &lt;- rep(0, length(theta5))
+##         }
+##         else {
+##             tnde_d10 &lt;- c_cond * (a1 - a0)
+##         }
+##         if (is.null(theta6)) {
+##             tnde_d11 &lt;- rep(0, length(theta6))
+##         }
+##         else {
+##             tnde_d11 &lt;- tnde_d3
+##         }
 ##         Gamma_tnde &lt;- matrix(c(tnde_d1, tnde_d2, tnde_d3, tnde_d4, 
-##             tnde_d5, tnde_d6, tnde_d7, tnde_d8))
-##         pnie_Q &lt;- exp(theta2 + (theta3 * a0) + beta0 + (beta1 * 
-##             a1) + beta2_c)/(1 + exp(theta2 + (theta3 * a0) + 
-##             beta0 + (beta1 * a1) + beta2_c))
-##         pnie_B &lt;- exp(theta2 + (theta3 * a0) + beta0 + (beta1 * 
-##             a0) + beta2_c)/(1 + exp(theta2 + (theta3 * a0) + 
-##             beta0 + (beta1 * a0) + beta2_c))
-##         pnie_K &lt;- exp(beta0 + (beta1 * a1) + beta2_c)/(1 + exp(beta0 + 
-##             (beta1 * a1) + beta2_c))
-##         pnie_D &lt;- exp(beta0 + (beta1 * a0) + beta2_c)/(1 + exp(beta0 + 
-##             (beta1 * a0) + beta2_c))
-##         pnie_d1 &lt;- (pnie_D + pnie_Q) - (pnie_K + pnie_B)
-##         pnie_d2 &lt;- (a0 * (pnie_D - pnie_B)) + (a1 * (pnie_Q - 
-##             pnie_K))
-##         pnie_d3 &lt;- c_cond * ((pnie_D + pnie_Q) - (pnie_K + pnie_B))
-##         pnie_d4 &lt;- 0
+##             tnde_d5, tnde_d6, tnde_d7, tnde_d8, tnde_d9, tnde_d10, 
+##             tnde_d11))
+##         pnie_expit_q1 &lt;- expit(a0 * (beta1 + beta3_c) + beta0 + 
+##             beta2_c)
+##         pnie_expit_q2 &lt;- expit(a0 * (beta1 + beta3_c) + a0 * 
+##             theta3 + beta0 + beta2_c + theta6_c + theta2)
+##         pnie_expit_q3 &lt;- expit(a1 * (beta1 + beta3_c) + beta0 + 
+##             beta2_c)
+##         pnie_expit_q4 &lt;- expit(a1 * (beta1 + beta3_c) + a0 * 
+##             theta3 + beta0 + beta2_c + theta6_c + theta2)
+##         pnie_d1 &lt;- pnie_expit_q1 - pnie_expit_q2 - pnie_expit_q3 + 
+##             pnie_expit_q4
+##         pnie_d2 &lt;- a0 * (pnie_expit_q1 - pnie_expit_q2) + a1 * 
+##             (-pnie_expit_q3 + pnie_expit_q4)
+##         pnie_d3 &lt;- c_cond * pnie_d1
+##         if (is.null(beta3)) {
+##             pnie_d4 &lt;- rep(0, length(beta3))
+##         }
+##         else {
+##             pnie_d4 &lt;- c_cond * pnie_d2
+##         }
 ##         pnie_d5 &lt;- 0
-##         pnie_d6 &lt;- pnie_Q - pnie_B
-##         pnie_d7 &lt;- a0 * (pnie_Q - pnie_B)
-##         pnie_d8 &lt;- rep(0, length(theta4))
+##         pnie_d6 &lt;- 0
+##         pnie_d7 &lt;- pnie_expit_q4 - pnie_expit_q2
+##         pnie_d8 &lt;- a0 * pnie_d7
+##         pnie_d9 &lt;- rep(0, length(theta4))
+##         pnie_d10 &lt;- rep(0, length(theta5))
+##         if (is.null(theta6)) {
+##             pnie_d11 &lt;- rep(0, length(theta6))
+##         }
+##         else {
+##             pnie_d11 &lt;- c_cond * pnie_d7
+##         }
 ##         Gamma_pnie &lt;- matrix(c(pnie_d1, pnie_d2, pnie_d3, pnie_d4, 
-##             pnie_d5, pnie_d6, pnie_d7, pnie_d8))
+##             pnie_d5, pnie_d6, pnie_d7, pnie_d8, pnie_d9, pnie_d10, 
+##             pnie_d11))
 ##         Gamma_te &lt;- Gamma_pnde + Gamma_tnie
-##         pnde &lt;- (exp(theta1 * a1) * (1 + exp(theta2 + (theta3 * 
-##             a1) + beta0 + (beta1 * a0) + beta2_c)))/(exp(theta1 * 
-##             a0) * (1 + exp(theta2 + (theta3 * a0) + beta0 + (beta1 * 
-##             a0) + beta2_c)))
-##         tnie &lt;- ((1 + exp(beta0 + (beta1 * a0) + beta2_c)) * 
-##             (1 + exp(theta2 + (theta3 * a1) + beta0 + (beta1 * 
-##                 a1) + beta2_c)))/((1 + exp(beta0 + (beta1 * a1) + 
-##             beta2_c)) * (1 + exp(theta2 + (theta3 * a1) + beta0 + 
-##             (beta1 * a0) + beta2_c)))
+##         pnde &lt;- ((theta1 + theta5_c) * (a1 - a0)) + log(1 + exp(beta0 + 
+##             beta1 * a0 + beta2_c + beta3_c * a0 + theta2 + theta3 * 
+##             a1 + theta6_c)) - log(1 + exp(beta0 + beta1 * a0 + 
+##             beta2_c + beta3_c * a0 + theta2 + theta3 * a0 + theta6_c))
+##         tnie &lt;- log(1 + exp(beta0 + beta1 * a1 + beta2_c + beta3_c * 
+##             a1 + theta2 + theta3 * a1 + theta6_c)) - log(1 + 
+##             exp(beta0 + beta1 * a0 + beta2_c + beta3_c * a0 + 
+##                 theta2 + theta3 * a1 + theta6_c)) + log(1 + exp(beta0 + 
+##             beta1 * a0 + beta2_c + beta3_c * a0)) - log(1 + exp(beta0 + 
+##             beta1 * a1 + beta2_c + beta3_c * a1))
 ##         d_pm &lt;- grad_prop_med_yreg_logistic(pnde = unname(pnde), 
 ##             tnie = unname(tnie))
 ##         Gamma_pm &lt;- (d_pm[[&quot;pnde&quot;]] * Gamma_pnde) + (d_pm[[&quot;tnie&quot;]] * 
@@ -742,7 +1468,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##     }
 ##     return(fun_se)
 ## }
-## &lt;bytecode: 0x7f9f150b4948&gt;
+## &lt;bytecode: 0x7fa5a5c1d5f8&gt;
 ## &lt;environment: namespace:regmedint&gt;</code></pre>
 </div>
 </div>

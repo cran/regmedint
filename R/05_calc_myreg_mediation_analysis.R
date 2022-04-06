@@ -6,7 +6,7 @@
 ################################################################################
 
 
-##' Return mediation analysis functions given mediator and outcome models.
+##' Return mediation analysis functions given mediator and outcome models specifications.
 ##'
 ##' This function returns functions that can be used to calculate the causal effect measures, given the mediator model fit (\code{mreg_fit}) and the outcome model fit (\code{yreg_fit}).
 ##'
@@ -22,6 +22,9 @@ calc_myreg <- function(mreg,
                        avar,
                        mvar,
                        cvar,
+                       emm_ac_mreg,
+                       emm_ac_yreg,
+                       emm_mc_yreg,
                        interaction) {
 
     supported_nonlinear_yreg <- c("logistic","loglinear","poisson","negbin",
@@ -35,6 +38,9 @@ calc_myreg <- function(mreg,
                  avar = avar,
                  mvar = mvar,
                  cvar = cvar,
+                 emm_ac_mreg = emm_ac_mreg,
+                 emm_ac_yreg = emm_ac_yreg,
+                 emm_mc_yreg = emm_mc_yreg,
                  interaction = interaction)
 
     ## Only four patterns as the non-linear yreg cases are the
@@ -45,7 +51,7 @@ calc_myreg <- function(mreg,
     ## Each helper function is defined in a dedicated file.
     if (mreg == "linear" & yreg == "linear") {
 
-        ## VanderWeele 2015 p466 Proposition 2.3
+        ## Extended VanderWeele 2015 p466 Proposition 2.3
         list_est_fun_se_fun <-
             calc_myreg_mreg_linear_yreg_linear(mreg = mreg,
                                                mreg_fit = mreg_fit,
@@ -54,11 +60,14 @@ calc_myreg <- function(mreg,
                                                avar = avar,
                                                mvar = mvar,
                                                cvar = cvar,
+                                               emm_ac_mreg = emm_ac_mreg,
+                                               emm_ac_yreg = emm_ac_yreg,
+                                               emm_mc_yreg = emm_mc_yreg,
                                                interaction = interaction)
 
     } else if (mreg == "linear" & yreg %in% supported_nonlinear_yreg) {
 
-        ## VanderWeele 2015 p468 Proposition 2.4
+        ## Extension of VanderWeele 2015 p468 Proposition 2.4
         list_est_fun_se_fun <-
             calc_myreg_mreg_linear_yreg_logistic(mreg = mreg,
                                                  mreg_fit = mreg_fit,
@@ -67,11 +76,14 @@ calc_myreg <- function(mreg,
                                                  avar = avar,
                                                  mvar = mvar,
                                                  cvar = cvar,
+                                                 emm_ac_mreg = emm_ac_mreg,
+                                                 emm_ac_yreg = emm_ac_yreg,
+                                                 emm_mc_yreg = emm_mc_yreg,
                                                  interaction = interaction)
 
     } else if (mreg == "logistic" & yreg == "linear") {
 
-        ## VanderWeele 2015 p471 Proposition 2.5
+        ## Extension of VanderWeele 2015 p471 Proposition 2.5
         list_est_fun_se_fun <-
             calc_myreg_mreg_logistic_yreg_linear(mreg = mreg,
                                                  mreg_fit = mreg_fit,
@@ -80,12 +92,15 @@ calc_myreg <- function(mreg,
                                                  avar = avar,
                                                  mvar = mvar,
                                                  cvar = cvar,
+                                                 emm_ac_mreg = emm_ac_mreg,
+                                                 emm_ac_yreg = emm_ac_yreg,
+                                                 emm_mc_yreg = emm_mc_yreg,
                                                  interaction = interaction)
 
 
     } else if (mreg == "logistic" & yreg %in% supported_nonlinear_yreg) {
 
-        ## VanderWeele 2015 p473 Proposition 2.6
+        ## Extended VanderWeele 2015 p473 Proposition 2.6
         list_est_fun_se_fun <-
             calc_myreg_mreg_logistic_yreg_logistic(mreg = mreg,
                                                    mreg_fit = mreg_fit,
@@ -94,6 +109,9 @@ calc_myreg <- function(mreg,
                                                    avar = avar,
                                                    mvar = mvar,
                                                    cvar = cvar,
+                                                   emm_ac_mreg = emm_ac_mreg,
+                                                   emm_ac_yreg = emm_ac_yreg,
+                                                   emm_mc_yreg = emm_mc_yreg,
                                                    interaction = interaction)
 
     } else  {

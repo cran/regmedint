@@ -12,6 +12,9 @@ calc_myreg_mreg_linear_yreg_logistic(
   avar,
   mvar,
   cvar,
+  emm_ac_mreg,
+  emm_ac_yreg,
+  emm_mc_yreg,
   interaction
 )
 }
@@ -28,13 +31,19 @@ calc_myreg_mreg_linear_yreg_logistic(
 
 \item{mvar}{A character vector of length 1. Mediator variable name.}
 
-\item{cvar}{A character vector of length > 0. Covariate names. Use \code{NULL} if there is no covariate. However, this is a highly suspicious situation. Even if \code{avar} is randomized, \code{mvar} is not. Thus, there should usually be some confounder(s) to account for the common cause structure (confounding) between \code{mvar} and \code{yvar}.}
+\item{cvar}{A character vector of length > 0. Covariate names. Use \code{NULL} if there is no covariate. However, this is a highly suspicious situation. Even if \code{avar} is randomized, \code{mvar} is not. Thus, there are usually some confounder(s) to account for the common cause structure (confounding) between \code{mvar} and \code{yvar}.}
 
-\item{interaction}{A logical vector of length 1. Default to TRUE. Whether to include a mediator-treatment interaction term in the outcome regression model.}
+\item{emm_ac_mreg}{A character vector of length > 0. Effect modifiers names. The covariate vector in treatment-covariate product term in the mediator model.}
+
+\item{emm_ac_yreg}{A character vector of length > 0. Effect modifiers names. The covariate vector in treatment-covariate product term in the outcome model.}
+
+\item{emm_mc_yreg}{A character vector of length > 0. Effect modifiers names. The covariate vector in mediator-covariate product term in outcome model.}
+
+\item{interaction}{A logical vector of length 1. The presence of treatment-mediator interaction in the outcome model. Default to TRUE.}
 }
 \value{
-A list contraining a function for effect estimates and a function for corresponding standard errors.
+A list containing a function for effect estimates and a function for corresponding standard errors.
 }
 \description{
-Construct functions for the conditional effect estimates and their standard errors in the mreg linear / yreg logistic setting. Internally, this function deconstruct model objects and feed parameter estiamtes to the internal worker functions \code{calc_myreg_mreg_linear_yreg_logistic_est} and \code{calc_myreg_mreg_linear_yreg_logistic_se}.
+Construct functions for the conditional effect estimates and their standard errors in the mreg linear / yreg logistic setting. Internally, this function deconstructs model objects and feeds parameter estimates to the internal worker functions \code{calc_myreg_mreg_linear_yreg_logistic_est} and \code{calc_myreg_mreg_linear_yreg_logistic_se}.
 }

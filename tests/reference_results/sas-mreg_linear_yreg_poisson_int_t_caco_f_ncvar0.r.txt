@@ -12,7 +12,7 @@ Coefficients:
 (Intercept)   2.2132     0.8784   2.520   0.0123 *
 trt           0.7434     0.5532   1.344   0.1801  
 ---
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 Residual standard error: 4.594 on 274 degrees of freedom
 Multiple R-squared:  0.006548,	Adjusted R-squared:  0.002923 
@@ -21,7 +21,7 @@ F-statistic: 1.806 on 1 and 274 DF,  p-value: 0.1801
 ### Outcome model
 
 Call:
-glm(formula = platelet ~ trt * bili, family = poisson(link = "log"), 
+glm(formula = platelet ~ trt + bili + trt:bili, family = poisson(link = "log"), 
     data = data)
 
 Deviance Residuals: 
@@ -35,7 +35,7 @@ trt          0.008362   0.009340   0.895         0.371
 bili        -0.019536   0.003254  -6.004 0.00000000193 ***
 trt:bili     0.007832   0.001843   4.249 0.00002148307 ***
 ---
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 (Dispersion parameter for poisson family taken to be 1)
 

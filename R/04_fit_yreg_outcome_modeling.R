@@ -38,6 +38,8 @@ fit_yreg <- function(yreg,
                      avar,
                      mvar,
                      cvar,
+                     emm_ac_yreg = NULL,
+                     emm_mc_yreg = NULL,
                      eventvar,
                      interaction) {
 
@@ -46,6 +48,8 @@ fit_yreg <- function(yreg,
                                           avar,
                                           mvar,
                                           cvar,
+                                          emm_ac_yreg,
+                                          emm_mc_yreg,
                                           interaction,
                                           eventvar)
 
@@ -151,6 +155,8 @@ string_yreg_formula <- function(yvar,
                                 avar,
                                 mvar,
                                 cvar,
+                                emm_ac_yreg,
+                                emm_mc_yreg,
                                 interaction,
                                 eventvar) {
 
@@ -158,34 +164,66 @@ string_yreg_formula <- function(yvar,
     assertthat::assert_that(!is.null(avar))
     assertthat::assert_that(!is.null(yvar))
 
-    ## Create A*M or A + M depending on interaction.
+    ## Create A * M or A + M depending on interaction.
     if (interaction) {
-        amvar_string <- sprintf("%s*%s", avar, mvar)
+      amvar_string <- paste(avar, mvar, paste0(avar, ":", mvar), sep = " + ")
     } else {
-        amvar_string <- sprintf("%s + %s", avar, mvar)
+      amvar_string <- paste(avar, mvar, sep = " + ")
     }
 
     ## Add covariates if they exist.
     if (is.null(cvar)) {
-        amcvar_string <- amvar_string
+      amcvar_string <- amvar_string
     } else {
+      if(is.null(emm_ac_yreg) & is.null(emm_mc_yreg)){
         cvar_string <- paste0(cvar, collapse = " + ")
         amcvar_string <- sprintf("%s + %s", amvar_string, cvar_string)
+      }
+      else if(!is.null(emm_ac_yreg) & is.null(emm_mc_yreg)){
+        cvar_string <- paste0(cvar, collapse = " + ")
+        ## Add avar * emm_ac_yreg product terms:
+        temp <- NULL
+        for(i in 1:length(emm_ac_yreg)){
+          temp <- paste0(c(temp, paste0(c(avar, emm_ac_yreg[i]), collapse = " : ")), collapse = " + ")
+        }
+        amcvar_string <- paste(amvar_string, cvar_string, temp, sep = " + ") 
+      }
+      else if(is.null(emm_ac_yreg) & !is.null(emm_mc_yreg)){
+        cvar_string <- paste0(cvar, collapse = " + ")
+        ## Add mvar * emm_mc_yreg product terms:
+        temp <- NULL
+        for(i in 1:length(emm_mc_yreg)){
+          temp <- paste0(c(temp, paste0(c(mvar, emm_mc_yreg[i]), collapse = " : ")), collapse = " + ")
+        }
+        amcvar_string <- paste(amvar_string, cvar_string, temp, sep = " + ")  
+      }
+      else if(!is.null(emm_ac_yreg) & !is.null(emm_mc_yreg)){
+        cvar_string <- paste0(cvar, collapse = " + ")
+        ## Add avar * emm_ac_mreg product terms:
+        temp1 <- temp2 <- NULL
+        for(i in 1:length(emm_ac_yreg)){
+          temp1 <- paste0(c(temp1, paste0(c(avar, emm_ac_yreg[i]), collapse = " : ")), collapse = " + ")
+        }
+        ## Add mvar * emm_mc_yreg product terms:
+        for(j in 1:length(emm_mc_yreg)){
+          temp2 <- paste0(c(temp2, paste0(c(mvar, emm_mc_yreg[j]), collapse = " : ")), collapse = " + ")
+        }
+        amcvar_string <- paste(amvar_string, cvar_string, temp1, temp2, sep = " + ") 
+      }
     }
-
+    
     ## eventvar must be NULL for a non-survival outcome model.
     if (is.null(eventvar)) {
-
-        return(sprintf("%s ~ %s", yvar, amcvar_string))
-
+      return(sprintf("%s ~ %s", yvar, amcvar_string))
+      
     } else {
-
-        ## Survival outcome
-        surv_string <- sprintf("Surv(%s, %s)", yvar, eventvar)
-        return(sprintf("%s ~ %s", surv_string, amcvar_string))
-
+      ## Survival outcome
+      surv_string <- sprintf("Surv(%s, %s)", yvar, eventvar)
+      return(sprintf("%s ~ %s", surv_string, amcvar_string))
+      
     }
 }
+
 
 ##' Robust sandwich variance estimator for modified Poisson
 ##'
@@ -250,7 +288,7 @@ summary.regmedint_mod_poisson <- function(object, ...) {
     if (p > 0) {
         p1 <- 1L:p
 	Qr <- qr.lm(object)
-        ## WATCHIT! doesn't this rely on pivoting not permuting 1L:p? -- that's quaranteed
+        ## WATCHIT! doesn't this rely on pivoting not permuting 1L:p? -- that's guaranteed
         coef.p <- object$coefficients[Qr$pivot[p1]]
         ## Changed from below.
         ## covmat.unscaled <- chol2inv(Qr$qr[p1,p1,drop=FALSE])

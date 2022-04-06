@@ -21,6 +21,9 @@ new_regmedint <- function(data,
                           avar,
                           mvar,
                           cvar,
+                          emm_ac_mreg, 
+                          emm_ac_yreg, 
+                          emm_mc_yreg, 
                           eventvar,
                           a0,
                           a1,
@@ -48,7 +51,8 @@ new_regmedint <- function(data,
                          data = mreg_data,
                          avar = avar,
                          mvar = mvar,
-                         cvar = cvar)
+                         cvar = cvar,
+                         emm_ac_mreg = emm_ac_mreg) 
 
     ## Perform yreg
     yreg_fit <- fit_yreg(yreg = yreg,
@@ -57,7 +61,9 @@ new_regmedint <- function(data,
                          avar = avar,
                          mvar = mvar,
                          cvar = cvar,
-                         interaction = interaction,
+                         emm_ac_yreg = emm_ac_yreg, 
+                         emm_mc_yreg = emm_mc_yreg, 
+                         interaction = interaction, 
                          eventvar = eventvar)
 
     ## Return a list of functions
@@ -68,7 +74,10 @@ new_regmedint <- function(data,
                              avar = avar,
                              mvar = mvar,
                              cvar = cvar,
-                             interaction = interaction)
+                             emm_ac_mreg = emm_ac_mreg, 
+                             emm_ac_yreg = emm_ac_yreg, 
+                             emm_mc_yreg = emm_mc_yreg, 
+                             interaction = interaction) 
 
     ## Construct the result object
     res <- list(mreg_fit = mreg_fit,
@@ -79,6 +88,9 @@ new_regmedint <- function(data,
                             avar = avar,
                             mvar = mvar,
                             cvar = cvar,
+                            emm_ac_mreg = emm_ac_mreg, 
+                            emm_ac_yreg = emm_ac_yreg, 
+                            emm_mc_yreg = emm_mc_yreg, 
                             a0 = a0,
                             a1 = a1,
                             m_cde = m_cde,
@@ -86,7 +98,7 @@ new_regmedint <- function(data,
                             mreg = mreg,
                             interaction = interaction,
                             casecontrol = casecontrol,
-                            c_cond = c_cond,
+                            c_cond = c_cond, # all covariates levels
                             eventvar = eventvar))
     ## The main class is regmedint.
     class(res) <- c("regmedint", class(res))

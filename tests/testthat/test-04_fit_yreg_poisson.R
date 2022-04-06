@@ -10,7 +10,6 @@ library(testthat)
 library(survival)
 library(tidyverse)
 
-
 ###
 ### Internal function for yreg model fitting (logistic)
 ################################################################################
@@ -31,6 +30,8 @@ describe("fit_yreg poisson (no interaction)", {
                               avar = "trt",
                               mvar = "bili",
                               cvar = NULL,
+                              emm_ac_yreg = NULL,
+                              emm_mc_yreg = NULL,
                               interaction = FALSE,
                               eventvar = NULL)
         ref_fit0 <- glm(formula = platelet ~ trt + bili,
@@ -58,6 +59,8 @@ describe("fit_yreg poisson (no interaction)", {
                               avar = "trt",
                               mvar = "bili",
                               cvar = c("age"),
+                              emm_ac_yreg = NULL,
+                              emm_mc_yreg = NULL,
                               interaction = FALSE,
                               eventvar = NULL)
         ref_fit1 <- glm(formula = platelet ~ trt + bili + age,
@@ -85,6 +88,8 @@ describe("fit_yreg poisson (no interaction)", {
                               avar = "trt",
                               mvar = "bili",
                               cvar = c("age","male","stage"),
+                              emm_ac_yreg = NULL,
+                              emm_mc_yreg = NULL,
                               interaction = FALSE,
                               eventvar = NULL)
         ref_fit3 <- glm(formula = platelet ~ trt + bili + age + male + stage,
@@ -102,6 +107,37 @@ describe("fit_yreg poisson (no interaction)", {
         ## Same vcov
         expect_equal(vcov(yreg_fit3),
                      vcov(ref_fit3))
+    })
+    
+    # only test when emm_ac_yreg and emm_mc_yreg are both not null:
+    it("fits a correct model with three covariates, and non-null emm_ac_yreg and non-null emm_mc_yreg", {
+        ## Three covariates
+        yreg_fit6 <- fit_yreg(yreg = "poisson",
+                              data = pbc_cc,
+                              yvar = "platelet",
+                              avar = "trt",
+                              mvar = "bili",
+                              cvar = c("age","male","stage"),
+                              emm_ac_yreg = c("age"),
+                              emm_mc_yreg = c("male", "stage"),
+                              interaction = FALSE,
+                              eventvar = NULL)
+        ref_fit6 <- glm(formula = platelet ~ trt + bili + age + male + stage +
+                            trt:age + bili:male + bili:stage,
+                        family = poisson(link = "log"),
+                        data = pbc_cc)
+        ## Same classes
+        expect_equal(class(yreg_fit6),
+                     class(ref_fit6))
+        ## Same formula
+        expect_equal(as.character(yreg_fit6$call$formula),
+                     as.character(ref_fit6$call$formula))
+        ## Same coef
+        expect_equal(coef(yreg_fit6),
+                     coef(ref_fit6))
+        ## Same vcov
+        expect_equal(vcov(yreg_fit6),
+                     vcov(ref_fit6))
     })
 
 })
@@ -123,9 +159,11 @@ describe("fit_yreg poisson (interaction)", {
                               avar = "trt",
                               mvar = "bili",
                               cvar = NULL,
+                              emm_ac_yreg = NULL,
+                              emm_mc_yreg = NULL,
                               interaction = TRUE,
                               eventvar = NULL)
-        ref_fit0 <- glm(formula = platelet ~ trt*bili,
+        ref_fit0 <- glm(formula = platelet ~ trt + bili + trt:bili,
                         family = poisson(link = "log"),
                         data = pbc_cc)
         ## Same classes
@@ -150,9 +188,11 @@ describe("fit_yreg poisson (interaction)", {
                               avar = "trt",
                               mvar = "bili",
                               cvar = c("age"),
+                              emm_ac_yreg = NULL,
+                              emm_mc_yreg = NULL,
                               interaction = TRUE,
                               eventvar = NULL)
-        ref_fit1 <- glm(formula = platelet ~ trt*bili + age,
+        ref_fit1 <- glm(formula = platelet ~ trt + bili + trt:bili + age,
                         family = poisson(link = "log"),
                         data = pbc_cc)
         ## Same classes
@@ -177,9 +217,11 @@ describe("fit_yreg poisson (interaction)", {
                               avar = "trt",
                               mvar = "bili",
                               cvar = c("age","male","stage"),
+                              emm_ac_yreg = NULL,
+                              emm_mc_yreg = NULL,
                               interaction = TRUE,
                               eventvar = NULL)
-        ref_fit3 <- glm(formula = platelet ~ trt*bili + age + male + stage,
+        ref_fit3 <- glm(formula = platelet ~ trt + bili + trt:bili + age + male + stage,
                         family = poisson(link = "log"),
                         data = pbc_cc)
         ## Same classes
@@ -194,6 +236,37 @@ describe("fit_yreg poisson (interaction)", {
         ## Same vcov
         expect_equal(vcov(yreg_fit3),
                      vcov(ref_fit3))
+    })
+    
+    # only test when emm_ac_yreg and emm_mc_yreg are both not null:
+    it("fits a correct model with three covariates, and non-null emm_ac_yreg and non-null emm_mc_yreg", {
+        ## Three covariates
+        yreg_fit6 <- fit_yreg(yreg = "poisson",
+                              data = pbc_cc,
+                              yvar = "platelet",
+                              avar = "trt",
+                              mvar = "bili",
+                              cvar = c("age","male","stage"),
+                              emm_ac_yreg = c("age"),
+                              emm_mc_yreg = c("male", "stage"),
+                              interaction = TRUE,
+                              eventvar = NULL)
+        ref_fit6 <- glm(formula = platelet ~ trt + bili + trt:bili + age + male + stage +
+                            trt:age + bili:male + bili:stage,
+                        family = poisson(link = "log"),
+                        data = pbc_cc)
+        ## Same classes
+        expect_equal(class(yreg_fit6),
+                     class(ref_fit6))
+        ## Same formula
+        expect_equal(as.character(yreg_fit6$call$formula),
+                     as.character(ref_fit6$call$formula))
+        ## Same coef
+        expect_equal(coef(yreg_fit6),
+                     coef(ref_fit6))
+        ## Same vcov
+        expect_equal(vcov(yreg_fit6),
+                     vcov(ref_fit6))
     })
 
 })
