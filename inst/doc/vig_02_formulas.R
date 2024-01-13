@@ -1,4 +1,4 @@
-## ---- message = FALSE, tidy = FALSE, echo = F---------------------------------
+## ----message = FALSE, tidy = FALSE, echo = F----------------------------------
 ## knitr configuration: http://yihui.name/knitr/options#chunk_options
 library(knitr)
 showMessage <- FALSE

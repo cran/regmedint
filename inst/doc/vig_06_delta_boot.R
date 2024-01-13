@@ -1,4 +1,4 @@
-## ---- message = FALSE, tidy = FALSE, echo = F---------------------------------
+## ----message = FALSE, tidy = FALSE, echo = F----------------------------------
 ## knitr configuration: http://yihui.name/knitr/options#chunk_options
 library(knitr)
 showMessage <- FALSE
@@ -70,7 +70,7 @@ dat_logistic_M_linear_Y   <- as.data.frame(datamaker.s4.m2(n = 5000, k = 0.3))
 dat_linear_M_logistic_Y   <- as.data.frame(datamaker.s4.m3(n = 5000, k = 0.7))
 dat_logistic_M_logistic_Y <- as.data.frame(datamaker.s4.m4(n = 5000, k = 0.3))
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  regmedint1 <- regmedint(data = dat_linear_M_linear_Y,
 #                          yvar = "Y",
 #                          avar = "A",
@@ -91,7 +91,7 @@ dat_logistic_M_logistic_Y <- as.data.frame(datamaker.s4.m4(n = 5000, k = 0.3))
 #                          na_omit = FALSE)
 #  summary(regmedint1)
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  data1 <- dat_linear_M_linear_Y
 #  boot1 <- function(trials){
 #    ind <- sample(5000, 5000, replace = TRUE)
@@ -139,7 +139,7 @@ dat_logistic_M_logistic_Y <- as.data.frame(datamaker.s4.m4(n = 5000, k = 0.3))
 #  apply(results1.df, 2, mean)
 #  apply(results1.df, 2, sd)
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  regmedint2 <- regmedint(data = dat_logistic_M_linear_Y,
 #                          yvar = "Y",
 #                          avar = "A",
@@ -160,7 +160,7 @@ dat_logistic_M_logistic_Y <- as.data.frame(datamaker.s4.m4(n = 5000, k = 0.3))
 #                          na_omit = FALSE)
 #  summary(regmedint2)
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  data2 <- dat_logistic_M_linear_Y
 #  boot2 <- function(trials){
 #    ind <- sample(5000, 5000, replace = TRUE)
@@ -208,7 +208,7 @@ dat_logistic_M_logistic_Y <- as.data.frame(datamaker.s4.m4(n = 5000, k = 0.3))
 #  apply(results2.df, 2, mean)
 #  apply(results2.df, 2, sd)
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  regmedint3 <- regmedint(data = dat_linear_M_logistic_Y,
 #                          yvar = "Y",
 #                          avar = "A",
@@ -229,7 +229,7 @@ dat_logistic_M_logistic_Y <- as.data.frame(datamaker.s4.m4(n = 5000, k = 0.3))
 #                          na_omit = FALSE)
 #  summary(regmedint3)
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  data3 <- dat_linear_M_logistic_Y
 #  boot3 <- function(trials){
 #    ind <- sample(5000, 5000, replace = TRUE)
@@ -277,7 +277,7 @@ dat_logistic_M_logistic_Y <- as.data.frame(datamaker.s4.m4(n = 5000, k = 0.3))
 #  apply(results3.df, 2, mean)
 #  apply(results3.df, 2, sd)
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  regmedint4 <- regmedint(data = dat_logistic_M_logistic_Y,
 #                          yvar = "Y",
 #                          avar = "A",
@@ -298,7 +298,7 @@ dat_logistic_M_logistic_Y <- as.data.frame(datamaker.s4.m4(n = 5000, k = 0.3))
 #                          na_omit = FALSE)
 #  summary(regmedint4)
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  data4 <- dat_logistic_M_logistic_Y
 #  boot4 <- function(trials){
 #    ind <- sample(5000, 5000, replace = TRUE)
@@ -346,7 +346,7 @@ dat_logistic_M_logistic_Y <- as.data.frame(datamaker.s4.m4(n = 5000, k = 0.3))
 #  apply(results4.df, 2, mean)
 #  apply(results4.df, 2, sd)
 
-## ---- message = FALSE, tidy = FALSE, echo = F---------------------------------
+## ----message = FALSE, tidy = FALSE, echo = F----------------------------------
 m_lin_y_lin <- cbind.data.frame(c(0.54832158, 0.37202753, 0.28120386, 0.58513575,
                                   0.06809564, 0.65323139, 0.43048124),
                                 c(0.02201021, 0.02273628, 0.01480052, 0.02334807,
@@ -393,7 +393,7 @@ row.names(m_lin_y_lin) <- row.names(m_log_y_lin) <-
 colnames(m_lin_y_lin) <- colnames(m_log_y_lin) <-
   colnames(m_lin_y_log) <- colnames(m_log_y_log) <- col_name
 
-## ---- message = FALSE, tidy = FALSE, echo = F---------------------------------
+## ----message = FALSE, tidy = FALSE, echo = F----------------------------------
 # output table
 library(kableExtra)
 library(formattable)
@@ -406,22 +406,22 @@ kbl4 <- knitr::kable(m_log_y_log, align = "cccc", col.names = col_name,  digits 
 # formatting:
 # https://haozhu233.github.io/kableExtra/awesome_table_in_html.html
 
-## ---- message = FALSE, tidy = FALSE, echo = F---------------------------------
+## ----message = FALSE, tidy = FALSE, echo = F----------------------------------
 kbl1 %>%
   kable_classic(html_font = "Garamond") %>%
   add_header_above(c(" " = 1, "Non-bootstrap" = 2, "Bootstrap" = 2))
 
-## ---- message = FALSE, tidy = FALSE, echo = F---------------------------------
+## ----message = FALSE, tidy = FALSE, echo = F----------------------------------
 kbl2 %>%
   kable_classic(html_font = "Garamond") %>%
   add_header_above(c(" " = 1, "Non-bootstrap" = 2, "Bootstrap" = 2))
 
-## ---- message = FALSE, tidy = FALSE, echo = F---------------------------------
+## ----message = FALSE, tidy = FALSE, echo = F----------------------------------
 kbl3 %>%
   kable_classic(html_font = "Garamond") %>%
   add_header_above(c(" " = 1, "Non-bootstrap" = 2, "Bootstrap" = 2))
 
-## ---- message = FALSE, tidy = FALSE, echo = F---------------------------------
+## ----message = FALSE, tidy = FALSE, echo = F----------------------------------
 kbl4 %>%
   kable_classic(html_font = "Garamond") %>%
   add_header_above(c(" " = 1, "Non-bootstrap" = 2, "Bootstrap" = 2))
