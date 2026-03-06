@@ -71,280 +71,280 @@ dat_linear_M_logistic_Y   <- as.data.frame(datamaker.s4.m3(n = 5000, k = 0.7))
 dat_logistic_M_logistic_Y <- as.data.frame(datamaker.s4.m4(n = 5000, k = 0.3))
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  regmedint1 <- regmedint(data = dat_linear_M_linear_Y,
-#                          yvar = "Y",
-#                          avar = "A",
-#                          mvar = "M",
-#                          cvar = c("C"),
-#                          emm_ac_mreg = c("C"),
-#                          emm_ac_yreg = c("C"),
-#                          emm_mc_yreg = c("C"),
-#                          eventvar = NULL,
-#                          a0 = 0,
-#                          a1 = 1,
-#                          m_cde = 0.5012509,
-#                          c_cond = -0.0434094,
-#                          mreg = "linear",
-#                          yreg = "linear",
-#                          interaction = TRUE,
-#                          casecontrol = FALSE,
-#                          na_omit = FALSE)
-#  summary(regmedint1)
+# regmedint1 <- regmedint(data = dat_linear_M_linear_Y,
+#                         yvar = "Y",
+#                         avar = "A",
+#                         mvar = "M",
+#                         cvar = c("C"),
+#                         emm_ac_mreg = c("C"),
+#                         emm_ac_yreg = c("C"),
+#                         emm_mc_yreg = c("C"),
+#                         eventvar = NULL,
+#                         a0 = 0,
+#                         a1 = 1,
+#                         m_cde = 0.5012509,
+#                         c_cond = -0.0434094,
+#                         mreg = "linear",
+#                         yreg = "linear",
+#                         interaction = TRUE,
+#                         casecontrol = FALSE,
+#                         na_omit = FALSE)
+# summary(regmedint1)
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  data1 <- dat_linear_M_linear_Y
-#  boot1 <- function(trials){
-#    ind <- sample(5000, 5000, replace = TRUE)
-#    dat <- data1[ind,]
-#  
-#    regmedint1 <- regmedint(data = dat,
-#                            yvar = "Y",
-#                            avar = "A",
-#                            mvar = "M",
-#                            cvar = c("C"),
-#                            emm_ac_mreg = c("C"),
-#                            emm_ac_yreg = c("C"),
-#                            emm_mc_yreg = c("C"),
-#                            eventvar = NULL,
-#                            a0 = 0,
-#                            a1 = 1,
-#                            m_cde = 0.5012509,
-#                            c_cond = -0.0434094,
-#                            mreg = "linear",
-#                            yreg = "linear",
-#                            interaction = TRUE,
-#                            casecontrol = FALSE,
-#                            na_omit = FALSE)
-#  
-#    out <- summary(regmedint1)
-#    cde.est.boot <- out$summary_myreg[1,1]
-#    pnde.est.boot <- out$summary_myreg[2,1]
-#    tnie.est.boot <- out$summary_myreg[3,1]
-#    tnde.est.boot <- out$summary_myreg[4,1]
-#    pnie.est.boot <- out$summary_myreg[5,1]
-#    te.est.boot <- out$summary_myreg[6,1]
-#    pm.est.boot <- out$summary_myreg[7,1]
-#    return(c(cde.est.boot,
-#             pnde.est.boot, tnie.est.boot,
-#             tnde.est.boot, pnie.est.boot,
-#             te.est.boot, pm.est.boot))
-#  }
-#  
-#  set.seed(seed)
-#  system.time({
-#    results1 <- mclapply(trials, boot1, mc.cores = numCores)
-#  })
-#  
-#  results1.df <- as.data.frame(do.call(rbind, results1))
-#  apply(results1.df, 2, mean)
-#  apply(results1.df, 2, sd)
+# data1 <- dat_linear_M_linear_Y
+# boot1 <- function(trials){
+#   ind <- sample(5000, 5000, replace = TRUE)
+#   dat <- data1[ind,]
+# 
+#   regmedint1 <- regmedint(data = dat,
+#                           yvar = "Y",
+#                           avar = "A",
+#                           mvar = "M",
+#                           cvar = c("C"),
+#                           emm_ac_mreg = c("C"),
+#                           emm_ac_yreg = c("C"),
+#                           emm_mc_yreg = c("C"),
+#                           eventvar = NULL,
+#                           a0 = 0,
+#                           a1 = 1,
+#                           m_cde = 0.5012509,
+#                           c_cond = -0.0434094,
+#                           mreg = "linear",
+#                           yreg = "linear",
+#                           interaction = TRUE,
+#                           casecontrol = FALSE,
+#                           na_omit = FALSE)
+# 
+#   out <- summary(regmedint1)
+#   cde.est.boot <- out$summary_myreg[1,1]
+#   pnde.est.boot <- out$summary_myreg[2,1]
+#   tnie.est.boot <- out$summary_myreg[3,1]
+#   tnde.est.boot <- out$summary_myreg[4,1]
+#   pnie.est.boot <- out$summary_myreg[5,1]
+#   te.est.boot <- out$summary_myreg[6,1]
+#   pm.est.boot <- out$summary_myreg[7,1]
+#   return(c(cde.est.boot,
+#            pnde.est.boot, tnie.est.boot,
+#            tnde.est.boot, pnie.est.boot,
+#            te.est.boot, pm.est.boot))
+# }
+# 
+# set.seed(seed)
+# system.time({
+#   results1 <- mclapply(trials, boot1, mc.cores = numCores)
+# })
+# 
+# results1.df <- as.data.frame(do.call(rbind, results1))
+# apply(results1.df, 2, mean)
+# apply(results1.df, 2, sd)
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  regmedint2 <- regmedint(data = dat_logistic_M_linear_Y,
-#                          yvar = "Y",
-#                          avar = "A",
-#                          mvar = "M",
-#                          cvar = c("C"),
-#                          emm_ac_mreg = c("C"),
-#                          emm_ac_yreg = c("C"),
-#                          emm_mc_yreg = c("C"),
-#                          eventvar = NULL,
-#                          a0 = 0,
-#                          a1 = 1,
-#                          m_cde = 0,
-#                          c_cond = -0.0434094,
-#                          mreg = "logistic",
-#                          yreg = "linear",
-#                          interaction = TRUE,
-#                          casecontrol = FALSE,
-#                          na_omit = FALSE)
-#  summary(regmedint2)
+# regmedint2 <- regmedint(data = dat_logistic_M_linear_Y,
+#                         yvar = "Y",
+#                         avar = "A",
+#                         mvar = "M",
+#                         cvar = c("C"),
+#                         emm_ac_mreg = c("C"),
+#                         emm_ac_yreg = c("C"),
+#                         emm_mc_yreg = c("C"),
+#                         eventvar = NULL,
+#                         a0 = 0,
+#                         a1 = 1,
+#                         m_cde = 0,
+#                         c_cond = -0.0434094,
+#                         mreg = "logistic",
+#                         yreg = "linear",
+#                         interaction = TRUE,
+#                         casecontrol = FALSE,
+#                         na_omit = FALSE)
+# summary(regmedint2)
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  data2 <- dat_logistic_M_linear_Y
-#  boot2 <- function(trials){
-#    ind <- sample(5000, 5000, replace = TRUE)
-#    dat <- data2[ind,]
-#  
-#    regmedint2 <- regmedint(data = dat,
-#                            yvar = "Y",
-#                            avar = "A",
-#                            mvar = "M",
-#                            cvar = c("C"),
-#                            emm_ac_mreg = c("C"),
-#                            emm_ac_yreg = c("C"),
-#                            emm_mc_yreg = c("C"),
-#                            eventvar = NULL,
-#                            a0 = 0,
-#                            a1 = 1,
-#                            m_cde = 0,
-#                            c_cond = -0.0434094,
-#                            mreg = "logistic",
-#                            yreg = "linear",
-#                            interaction = TRUE,
-#                            casecontrol = FALSE,
-#                            na_omit = FALSE)
-#  
-#    out <- summary(regmedint2)
-#    cde.est.boot <- out$summary_myreg[1,1]
-#    pnde.est.boot <- out$summary_myreg[2,1]
-#    tnie.est.boot <- out$summary_myreg[3,1]
-#    tnde.est.boot <- out$summary_myreg[4,1]
-#    pnie.est.boot <- out$summary_myreg[5,1]
-#    te.est.boot <- out$summary_myreg[6,1]
-#    pm.est.boot <- out$summary_myreg[7,1]
-#    return(c(cde.est.boot,
-#             pnde.est.boot, tnie.est.boot,
-#             tnde.est.boot, pnie.est.boot,
-#             te.est.boot, pm.est.boot))
-#  }
-#  
-#  set.seed(seed)
-#  system.time({
-#    results2 <- mclapply(1:100, boot2, mc.cores = numCores)
-#  })
-#  
-#  results2.df <- as.data.frame(do.call(rbind, results2))
-#  apply(results2.df, 2, mean)
-#  apply(results2.df, 2, sd)
+# data2 <- dat_logistic_M_linear_Y
+# boot2 <- function(trials){
+#   ind <- sample(5000, 5000, replace = TRUE)
+#   dat <- data2[ind,]
+# 
+#   regmedint2 <- regmedint(data = dat,
+#                           yvar = "Y",
+#                           avar = "A",
+#                           mvar = "M",
+#                           cvar = c("C"),
+#                           emm_ac_mreg = c("C"),
+#                           emm_ac_yreg = c("C"),
+#                           emm_mc_yreg = c("C"),
+#                           eventvar = NULL,
+#                           a0 = 0,
+#                           a1 = 1,
+#                           m_cde = 0,
+#                           c_cond = -0.0434094,
+#                           mreg = "logistic",
+#                           yreg = "linear",
+#                           interaction = TRUE,
+#                           casecontrol = FALSE,
+#                           na_omit = FALSE)
+# 
+#   out <- summary(regmedint2)
+#   cde.est.boot <- out$summary_myreg[1,1]
+#   pnde.est.boot <- out$summary_myreg[2,1]
+#   tnie.est.boot <- out$summary_myreg[3,1]
+#   tnde.est.boot <- out$summary_myreg[4,1]
+#   pnie.est.boot <- out$summary_myreg[5,1]
+#   te.est.boot <- out$summary_myreg[6,1]
+#   pm.est.boot <- out$summary_myreg[7,1]
+#   return(c(cde.est.boot,
+#            pnde.est.boot, tnie.est.boot,
+#            tnde.est.boot, pnie.est.boot,
+#            te.est.boot, pm.est.boot))
+# }
+# 
+# set.seed(seed)
+# system.time({
+#   results2 <- mclapply(1:100, boot2, mc.cores = numCores)
+# })
+# 
+# results2.df <- as.data.frame(do.call(rbind, results2))
+# apply(results2.df, 2, mean)
+# apply(results2.df, 2, sd)
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  regmedint3 <- regmedint(data = dat_linear_M_logistic_Y,
-#                          yvar = "Y",
-#                          avar = "A",
-#                          mvar = "M",
-#                          cvar = c("C"),
-#                          emm_ac_mreg = c("C"),
-#                          emm_ac_yreg = c("C"),
-#                          emm_mc_yreg = c("C"),
-#                          eventvar = NULL,
-#                          a0 = 0,
-#                          a1 = 1,
-#                          m_cde = 0.5012509,
-#                          c_cond = 0.5,
-#                          mreg = "linear",
-#                          yreg = "logistic",
-#                          interaction = TRUE,
-#                          casecontrol = FALSE,
-#                          na_omit = FALSE)
-#  summary(regmedint3)
+# regmedint3 <- regmedint(data = dat_linear_M_logistic_Y,
+#                         yvar = "Y",
+#                         avar = "A",
+#                         mvar = "M",
+#                         cvar = c("C"),
+#                         emm_ac_mreg = c("C"),
+#                         emm_ac_yreg = c("C"),
+#                         emm_mc_yreg = c("C"),
+#                         eventvar = NULL,
+#                         a0 = 0,
+#                         a1 = 1,
+#                         m_cde = 0.5012509,
+#                         c_cond = 0.5,
+#                         mreg = "linear",
+#                         yreg = "logistic",
+#                         interaction = TRUE,
+#                         casecontrol = FALSE,
+#                         na_omit = FALSE)
+# summary(regmedint3)
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  data3 <- dat_linear_M_logistic_Y
-#  boot3 <- function(trials){
-#    ind <- sample(5000, 5000, replace = TRUE)
-#    dat <- data3[ind,]
-#  
-#    regmedint3 <- regmedint(data = dat,
-#                            yvar = "Y",
-#                            avar = "A",
-#                            mvar = "M",
-#                            cvar = c("C"),
-#                            emm_ac_mreg = c("C"),
-#                            emm_ac_yreg = c("C"),
-#                            emm_mc_yreg = c("C"),
-#                            eventvar = NULL,
-#                            a0 = 0,
-#                            a1 = 1,
-#                            m_cde = 0.5012509,
-#                            c_cond = 0.5,
-#                            mreg = "linear",
-#                            yreg = "logistic",
-#                            interaction = TRUE,
-#                            casecontrol = FALSE,
-#                            na_omit = FALSE)
-#  
-#    out <- summary(regmedint3)
-#    cde.est.boot <- out$summary_myreg[1,1]
-#    pnde.est.boot <- out$summary_myreg[2,1]
-#    tnie.est.boot <- out$summary_myreg[3,1]
-#    tnde.est.boot <- out$summary_myreg[4,1]
-#    pnie.est.boot <- out$summary_myreg[5,1]
-#    te.est.boot <- out$summary_myreg[6,1]
-#    pm.est.boot <- out$summary_myreg[7,1]
-#    return(c(cde.est.boot,
-#             pnde.est.boot, tnie.est.boot,
-#             tnde.est.boot, pnie.est.boot,
-#             te.est.boot, pm.est.boot))
-#  }
-#  
-#  set.seed(seed)
-#  system.time({
-#    results3 <- mclapply(trials, boot3, mc.cores = numCores)
-#  })
-#  
-#  results3.df <- as.data.frame(do.call(rbind, results3))
-#  apply(results3.df, 2, mean)
-#  apply(results3.df, 2, sd)
+# data3 <- dat_linear_M_logistic_Y
+# boot3 <- function(trials){
+#   ind <- sample(5000, 5000, replace = TRUE)
+#   dat <- data3[ind,]
+# 
+#   regmedint3 <- regmedint(data = dat,
+#                           yvar = "Y",
+#                           avar = "A",
+#                           mvar = "M",
+#                           cvar = c("C"),
+#                           emm_ac_mreg = c("C"),
+#                           emm_ac_yreg = c("C"),
+#                           emm_mc_yreg = c("C"),
+#                           eventvar = NULL,
+#                           a0 = 0,
+#                           a1 = 1,
+#                           m_cde = 0.5012509,
+#                           c_cond = 0.5,
+#                           mreg = "linear",
+#                           yreg = "logistic",
+#                           interaction = TRUE,
+#                           casecontrol = FALSE,
+#                           na_omit = FALSE)
+# 
+#   out <- summary(regmedint3)
+#   cde.est.boot <- out$summary_myreg[1,1]
+#   pnde.est.boot <- out$summary_myreg[2,1]
+#   tnie.est.boot <- out$summary_myreg[3,1]
+#   tnde.est.boot <- out$summary_myreg[4,1]
+#   pnie.est.boot <- out$summary_myreg[5,1]
+#   te.est.boot <- out$summary_myreg[6,1]
+#   pm.est.boot <- out$summary_myreg[7,1]
+#   return(c(cde.est.boot,
+#            pnde.est.boot, tnie.est.boot,
+#            tnde.est.boot, pnie.est.boot,
+#            te.est.boot, pm.est.boot))
+# }
+# 
+# set.seed(seed)
+# system.time({
+#   results3 <- mclapply(trials, boot3, mc.cores = numCores)
+# })
+# 
+# results3.df <- as.data.frame(do.call(rbind, results3))
+# apply(results3.df, 2, mean)
+# apply(results3.df, 2, sd)
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  regmedint4 <- regmedint(data = dat_logistic_M_logistic_Y,
-#                          yvar = "Y",
-#                          avar = "A",
-#                          mvar = "M",
-#                          cvar = c("C"),
-#                          emm_ac_mreg = c("C"),
-#                          emm_ac_yreg = c("C"),
-#                          emm_mc_yreg = c("C"),
-#                          eventvar = NULL,
-#                          a0 = 0,
-#                          a1 = 1,
-#                          m_cde = 0,
-#                          c_cond = -0.0434094,
-#                          mreg = "logistic",
-#                          yreg = "logistic",
-#                          interaction = TRUE,
-#                          casecontrol = FALSE,
-#                          na_omit = FALSE)
-#  summary(regmedint4)
+# regmedint4 <- regmedint(data = dat_logistic_M_logistic_Y,
+#                         yvar = "Y",
+#                         avar = "A",
+#                         mvar = "M",
+#                         cvar = c("C"),
+#                         emm_ac_mreg = c("C"),
+#                         emm_ac_yreg = c("C"),
+#                         emm_mc_yreg = c("C"),
+#                         eventvar = NULL,
+#                         a0 = 0,
+#                         a1 = 1,
+#                         m_cde = 0,
+#                         c_cond = -0.0434094,
+#                         mreg = "logistic",
+#                         yreg = "logistic",
+#                         interaction = TRUE,
+#                         casecontrol = FALSE,
+#                         na_omit = FALSE)
+# summary(regmedint4)
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  data4 <- dat_logistic_M_logistic_Y
-#  boot4 <- function(trials){
-#    ind <- sample(5000, 5000, replace = TRUE)
-#    dat <- data4[ind,]
-#  
-#    regmedint4 <- regmedint(data = dat,
-#                            yvar = "Y",
-#                            avar = "A",
-#                            mvar = "M",
-#                            cvar = c("C"),
-#                            emm_ac_mreg = c("C"),
-#                            emm_ac_yreg = c("C"),
-#                            emm_mc_yreg = c("C"),
-#                            eventvar = NULL,
-#                            a0 = 0,
-#                            a1 = 1,
-#                            m_cde = 0,
-#                            c_cond = -0.0434094,
-#                            mreg = "logistic",
-#                            yreg = "logistic",
-#                            interaction = TRUE,
-#                            casecontrol = FALSE,
-#                            na_omit = FALSE)
-#  
-#    out <- summary(regmedint4)
-#    cde.est.boot <- out$summary_myreg[1,1]
-#    pnde.est.boot <- out$summary_myreg[2,1]
-#    tnie.est.boot <- out$summary_myreg[3,1]
-#    tnde.est.boot <- out$summary_myreg[4,1]
-#    pnie.est.boot <- out$summary_myreg[5,1]
-#    te.est.boot <- out$summary_myreg[6,1]
-#    pm.est.boot <- out$summary_myreg[7,1]
-#    return(c(cde.est.boot,
-#             pnde.est.boot, tnie.est.boot,
-#             tnde.est.boot, pnie.est.boot,
-#             te.est.boot, pm.est.boot))
-#  }
-#  
-#  set.seed(seed)
-#  system.time({
-#    results4 <- mclapply(trials, boot4, mc.cores = numCores)
-#  })
-#  
-#  results4.df <- as.data.frame(do.call(rbind, results4))
-#  apply(results4.df, 2, mean)
-#  apply(results4.df, 2, sd)
+# data4 <- dat_logistic_M_logistic_Y
+# boot4 <- function(trials){
+#   ind <- sample(5000, 5000, replace = TRUE)
+#   dat <- data4[ind,]
+# 
+#   regmedint4 <- regmedint(data = dat,
+#                           yvar = "Y",
+#                           avar = "A",
+#                           mvar = "M",
+#                           cvar = c("C"),
+#                           emm_ac_mreg = c("C"),
+#                           emm_ac_yreg = c("C"),
+#                           emm_mc_yreg = c("C"),
+#                           eventvar = NULL,
+#                           a0 = 0,
+#                           a1 = 1,
+#                           m_cde = 0,
+#                           c_cond = -0.0434094,
+#                           mreg = "logistic",
+#                           yreg = "logistic",
+#                           interaction = TRUE,
+#                           casecontrol = FALSE,
+#                           na_omit = FALSE)
+# 
+#   out <- summary(regmedint4)
+#   cde.est.boot <- out$summary_myreg[1,1]
+#   pnde.est.boot <- out$summary_myreg[2,1]
+#   tnie.est.boot <- out$summary_myreg[3,1]
+#   tnde.est.boot <- out$summary_myreg[4,1]
+#   pnie.est.boot <- out$summary_myreg[5,1]
+#   te.est.boot <- out$summary_myreg[6,1]
+#   pm.est.boot <- out$summary_myreg[7,1]
+#   return(c(cde.est.boot,
+#            pnde.est.boot, tnie.est.boot,
+#            tnde.est.boot, pnie.est.boot,
+#            te.est.boot, pm.est.boot))
+# }
+# 
+# set.seed(seed)
+# system.time({
+#   results4 <- mclapply(trials, boot4, mc.cores = numCores)
+# })
+# 
+# results4.df <- as.data.frame(do.call(rbind, results4))
+# apply(results4.df, 2, mean)
+# apply(results4.df, 2, sd)
 
 ## ----message = FALSE, tidy = FALSE, echo = F----------------------------------
 m_lin_y_lin <- cbind.data.frame(c(0.54832158, 0.37202753, 0.28120386, 0.58513575,

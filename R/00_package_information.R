@@ -7,7 +7,7 @@
 
 ##' regmedint: A package for regression-based causal mediation analysis
 ##'
-##' The package is an R implementation of regression-based closed-form causal mediation as originally described in Valeri & VanderWeele 2013 and Valeri & VanderWeele 2015 \url{https://www.hsph.harvard.edu/tyler-vanderweele/tools-and-tutorials/}. The earlier version is a sister program of the SAS macro. The current extended version (version 1.0 and later) supports effect modification by covariates (treatment-covariate and mediator-covariate product terms) in mediator and outcome models.
+##' The package is an R implementation of regression-based closed-form causal mediation as originally described in Valeri & VanderWeele 2013 and Valeri & VanderWeele 2015 \url{https://hsph.harvard.edu/research/vanderweele-lab/tools-and-tutorials/}. The earlier version is a sister program of the SAS macro. The current extended version (version 1.0 and later) supports effect modification by covariates (treatment-covariate and mediator-covariate product terms) in mediator and outcome models.
 ##'
 ##' @section Fitting models:
 ##' Use the regmedint function to fit models and set up regression-based causal mediation analysis.
@@ -22,9 +22,9 @@
 ##' @importFrom stats coef confint pnorm qnorm sigma vcov pt residuals as.formula na.omit
 ##' @importFrom survival Surv
 ##'
-##' @docType package
-##' @name regmedint
-NULL
+##' @keywords internal
+"_PACKAGE"
+
 
 
 ## http://r-pkgs.had.co.nz/data.html#data-data
@@ -44,5 +44,5 @@ NULL
 ##'   \item{event}{Binary event indicator. Event is 1.}
 ##' }
 ##'
-##' @source \url{https://www.hsph.harvard.edu/tyler-vanderweele/tools-and-tutorials/}
+##' @source \url{https://hsph.harvard.edu/research/vanderweele-lab/tools-and-tutorials/}
 "vv2015"

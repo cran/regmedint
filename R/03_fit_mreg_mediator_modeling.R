@@ -17,6 +17,7 @@
 ##' @inheritParams regmedint
 ##'
 ##' @return A regression object of class lm (linear) or glm (logistic)
+#' @export
 fit_mreg <- function(mreg,
                      data,
                      avar,
